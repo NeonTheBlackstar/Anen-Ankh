@@ -4,10 +4,10 @@
 #include <stdlib.h>
 #include <cmath>
 
+//Aiwlyss Test
 //Test
 
 using namespace std;
-GLdouble eyez = 0;
 GLdouble eyex = 0;
 GLdouble eyey = 0;
 
