@@ -4,11 +4,12 @@
 #include <stdlib.h>
 #include <cmath>
 
+//Test
 
 using namespace std;
+GLdouble eyez = 0;
 GLdouble eyex = 0;
 GLdouble eyey = 0;
-GLdouble eyez = 0;
 
 float angle = 0;
 GLdouble centerY = 0, centerX = 0, centerZ = 0;
