@@ -1,172 +1,115 @@
-#define _USE_MATH_DEFINE
+//Trza to potem pousuwaæ ¿eby niedublowaæ inkludów
+#include "glew/include/GL/glew.h"
+#include "glfw/include/GLFW/glfw3.h"
+#include "glut.h"
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
 #include <iostream>
-#include "../glut.h"
 #include <stdlib.h>
-#include <cmath>
+#include <stdio.h>
+#include <windows.h>
 
-//Aiwlyss Test
-//Test
+#include "OpenGLInitExit.h"
+#include "Game.h"
 
+using namespace glm;
 using namespace std;
-GLdouble eyex = 0;
-GLdouble eyey = 0;
 
-float angle = 0;
-GLdouble centerY = 0, centerX = 0, centerZ = 0;
-GLdouble worldX = 0, worldY = 0, worldZ = 0;
-float xAngle = 0, yAngle = 0;
+//Globalna ¿eby móc u¿ywaæ w draw scene i jednoczeœnie nie tworzy³o siê od nowa co klatkê.
+//Poza tym - wszystkie rzeczy róbmy za pomoc¹ game - bedzie ³atwiej ogarn¹æ. 
+//Np idŸ w przód to bêdzie od razu idŸ w przód i 
+//sprawdŸ czy nadal trzymasz siê kolizji czy spadasz.
+Game game = *(new Game());
 
-//Naciœniêcie przycisku myszki
-int button_state = GLUT_UP;
+//Procedura inicjuj¹ca
+void initOpenGLProgram() {
 
-//Po³o¿enie kursora myszki
-int button_x, button_y;
+	//************Tutaj umieszczaj kod, który nale¿y wykonaæ raz, na pocz¹tku programu************
+	glClearColor(0, 0, 0, 1);
 
-void Display()
-{
-	//Przygotowanie bufora koloru (ustalenie koloru kosmosu + wyczeszczenie)
-	glClearColor(0, 0, 0, 0);
-	glClear(GL_COLOR_BUFFER_BIT);
-
-	//Zaczêcie pracy od macierzy modelowania i przypisanie jej do macierzy jednostkowej.
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-
-	//cout << angle << " " << eyex + sin(angle) << " " << eyez - cos(angle) << endl;
-
-	//Umiejscowienie kamery - wspó¿êdne po³o¿enia kamery / punkt na który patrzy / wektor "w górê"
-	//gluLookAt(eyex, eyey, eyez, eyex + sin(angle)*100, centery, eyez - cos(angle)*100, 0, 1, 0);
-	//gluLookAt(eyex, eyey, eyez, eyex + sin(angle) * 100, centery, eyez - cos(angle) * 100, 0, 1, 0);
-
-	glRotatef(-yAngle, 1.0f, 0.0f, 0.0f);
-	glRotatef(-xAngle, 0.0f, 1.0f, 0.0f);
-	//glTranslatef(eyex + sin(xAngle), eyey - cos(yAngle), eyez);
-
-	//Ustalenie koloru czajnika i stworzenie czajnika
-	glColor3f(0.6, 0.2, 0.4);
-	glTranslated(0, 0, -0.5);
-	glutWireTeapot(0.5);
-
-	//Wykonanie poleceñ
-	glFlush();
-
-	//Prze³adowanie bufora kolorów
-	glutSwapBuffers();
-}
-
-void Reshape(int width, int height)
-{
-	//Ustalenie wielkoœci wyœwietlania na ca³e okno
-	glViewport(0, 0, width, height);
-
-	// Przestawienie macierzy na macierz rzutowania
+	//Je¿eli bêdziemy chcieli bawic siê perspektyw¹, to trza to prze³o¿yæ to draw Scene
 	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-
-	// Dopasowanie perspektywy. Wybieramy perspektywiczne, bo jest bardziej zajebiste.
-	GLdouble aspect = (GLdouble)width / (GLdouble)height;
-	gluPerspective(50, aspect, 0.1, 100.0);
-
-	Display();
+	glLoadMatrixf(value_ptr(game.SetPerspective()));
 }
 
-void specialKeys(int key, int x, int y) // CHUJ NIE DZIA£A :(
-{
-	if (key == GLUT_KEY_DOWN) {
-		cout << "UP!" << endl;
-		eyez -= 0.1;
-	}
-	else if (key == GLUT_KEY_UP) {
-		eyez += 0.1;
-	}
-	//gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, 0, 1, 0);
+//Procedura rysuj¹ca zawartoœæ sceny
+void drawScene(GLFWwindow* window) {
 
-	if (key == GLUT_KEY_RIGHT) {
-		eyex += 0.1;
+	//************Tutaj umieszczaj kod rysuj¹cy obraz******************l
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	//Powiedzenie GLowi ¿e coœ siê dzieje - stary OpenGL ma 2 macierze tylko, P i MV
+	//Zostawiam to tutaj dlatego, ¿e praktycznie wszystkie operacje w openGLu to operacje na tych macierzach - po kija je wywalaæ poza
+	mat4 MMatrix = mat4(1.0f);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadMatrixf(value_ptr(game.SetPlayerPosition()*MMatrix));
+
+	game.showLevelOne();
+
+	glfwSwapBuffers(window);
+}
+
+#pragma region EXTERNAL INPUT
+void keyCallback(GLFWwindow*window, int key, int scancode, int action, int mods)
+{
+	if (action == GLFW_PRESS) {
+		if (key == GLFW_KEY_A)
+			printf("A\n");
+		if (key == GLFW_KEY_D)
+			printf("D\n");
+		if (key == GLFW_KEY_W && (mods&GLFW_MOD_ALT) != 0)
+			printf("ALT + W\n");
 	}
-	else if (key == GLUT_KEY_LEFT)
+	if (action == GLFW_RELEASE) {
+		if (key == GLFW_KEY_W)
+			printf("puszczone W\n");
+	}
+}
+
+bool mouseRightClick = false;
+void mouseCallback(GLFWwindow*window, int button, int action, int mods)
+{
+	if (action == GLFW_PRESS)
 	{
-		eyex -= 0.1;
+		if (button == GLFW_MOUSE_BUTTON_RIGHT)
+			mouseRightClick = true;
 	}
-
-	// odrysowanie okna
-	Reshape(glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT));
-}
-
-void MouseButton(int button, int state, int x, int y)
-{
-	if (button == GLUT_RIGHT_BUTTON)
+	if (action == GLFW_RELEASE)
 	{
-		if (state == GLUT_DOWN)
-		{
-			button_state = GLUT_DOWN;
-
-			button_x = x;
-			button_y = y;
-		}
+		if (button == GLFW_MOUSE_BUTTON_RIGHT)
+			mouseRightClick = false;
 	}
 }
+#pragma endregion
 
-void MouseMotion(int x, int y)
+int main(void)
 {
-	if (button_state == GLUT_DOWN)
+	OpenGLInitExit* openGLInitExit = new OpenGLInitExit();
+	GLFWwindow* window = (*openGLInitExit).initLibsAndWindow();
+
+	initOpenGLProgram(); //Operacje inicjuj¹ce
+
+	#pragma region EXTERNAL INPUT
+	double xCursorPos;
+	double yCursorPos;
+	#pragma endregion
+
+	while (!glfwWindowShouldClose(window)) //Tak d³ugo jak okno nie powinno zostaæ zamkniête
 	{
-		xAngle -= (x - button_x);
-		button_x = x;
-		yAngle -= y - button_y;
-		button_y = y;
+		drawScene(window); //Wykonaj procedurê rysuj¹c¹
 
-		/*
-		//przeniesienie o x
-		angle -= (x - button_x);
-		if (angle < 0)
-		angle = 360 + angle;
-		if (angle > 360)
-		angle = angle - 360;
-		button_x = x;
-		angle = (angle * 3.1425) / 180;
-		//przeniesienie o y
-		centery -= y - button_y;
-		button_y = y;
-		//gluLookAt(eyex, eyey, eyez, eyex + sin(angle) * 100, centery, eyez - cos(angle) * 100, 0, 1, 0);
-		*/
+	#pragma region EXTERNAL INPUT
+		//Musz¹ byæ tutaj poniewa¿ jak siê wsadzi do klasy, to niema zainicjowanego glfw
+		//Funkcje tak samo, bo wywo³aniez klasy nie dzia³a
+		glfwSetKeyCallback(window, keyCallback);
+		glfwSetMouseButtonCallback(window, mouseCallback);
+		glfwGetCursorPos(window, &xCursorPos, &yCursorPos);
+		cout << xCursorPos << " " << yCursorPos << endl;
+	#pragma endregion
+
+		glfwPollEvents(); //Wykonaj procedury callback w zaleznoœci od zdarzeñ jakie zasz³y.
 	}
-	Reshape(glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT));
-}
 
-// Pocz¹tkowe ustawienia sceny
-void init()
-{
-	// Umiejscowienie kamery
-	gluLookAt(0, 0, 0, 0, 0, -100, 0, 1, 0);
-}
-
-int main(int argc, char * argv[])
-{
-	// inicjalizacja gluta
-	glutInit(&argc, argv);
-
-	// inicjalizacja bufora ramki - RGB i podwójny bufor
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
-
-	//Stworzenie okna
-	glutInitWindowSize(500, 500);
-	glutCreateWindow("");
-	//glutFullScreen();
-
-	//Funkcje wywo³uj¹ce funkcje
-	glutDisplayFunc(Display);
-	glutReshapeFunc(Reshape);
-
-	//Obs³uga klawiatury
-	glutSpecialFunc(specialKeys);
-	glutMouseFunc(MouseButton);
-	glutMotionFunc(MouseMotion);
-
-	init();
-
-	//Stworzenie glutopêtli
-	glutMainLoop();
-
-	return 0;
+	delete openGLInitExit;
 }
