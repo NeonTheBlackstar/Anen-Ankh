@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Labirynth.h"
+
 //Klasa poziomu, dowolnego. Zak³adamy ¿e ró¿ni¹ siê tylko parametrami 
 //z którymi s¹ wywo³ywane w Game poszczególne funkcje.
 //Odpowiada za ca³e zarz¹dzanie poziomem i 
@@ -8,14 +10,14 @@
 class Level
 {
 public:
-	Level() {};
-	~Level() {};
+	Labirynth labirynth;
 
-	//Test
-	void setTeapot();
+public:
+	Level();
+	~Level() {};
 };
 
-void Level::setTeapot()
-{
-	glutWireTeapot(1);
+Level::Level()
+{ 
+	labirynth = *(new Labirynth()); 
 }

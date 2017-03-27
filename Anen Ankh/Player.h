@@ -1,5 +1,12 @@
 #pragma once
+
 #include "Camera.h"
+#include "Collider.h"
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
+
+using namespace glm;
 
 //Klasa na wszystko co zwi¹zane z graczem. Przez playera mo¿na by wywo³ywaæ zarówno pojedyncze funkcje 
 //z klas z których dziedziczy, jak i te które wymagaj¹ po³¹czenia rzeczy z kilku klas.
@@ -7,6 +14,21 @@
 class Player : public Camera
 {
 public:
-	Player() {};
-	~Player() {};
+	CubeCollider3D collider;
+
+public:
+	Player(mat4 positionMatrix, vec3 positionVector);
+	~Player();
+};
+
+Player::~Player()
+{
+	delete &collider;
+}
+
+Player::Player(mat4 positionMatrix, vec3 positionVector) 
+{
+	this->positionMatrix = positionMatrix;
+	this->positionVector = positionVector;
+	collider = *(new CubeCollider3D(vec3(positionVector.x, positionVector.y-2.5, positionVector.z), vec3(0, -2.5, 0), vec3(1, 5, 1)));
 };

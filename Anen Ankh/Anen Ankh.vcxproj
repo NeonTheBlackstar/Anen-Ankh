@@ -153,10 +153,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Collider.h" />
+    <ClInclude Include="Construct.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="Labirynth.h" />
     <ClInclude Include="Level.h" />
     <ClInclude Include="OpenGLInitExit.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="Room.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

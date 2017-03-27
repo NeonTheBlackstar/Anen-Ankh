@@ -1,15 +1,4 @@
 //Trza to potem pousuwaæ ¿eby niedublowaæ inkludów
-#include "glew/include/GL/glew.h"
-#include "glfw/include/GLFW/glfw3.h"
-#include "glut.h"
-#include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-#include "glm/gtc/type_ptr.hpp"
-#include <iostream>
-#include <stdlib.h>
-#include <stdio.h>
-#include <windows.h>
-
 #include "OpenGLInitExit.h"
 #include "Game.h"
 
@@ -27,7 +16,6 @@ void initOpenGLProgram() {
 
 	//************Tutaj umieszczaj kod, który nale¿y wykonaæ raz, na pocz¹tku programu************
 	glClearColor(0, 0, 0, 1);
-
 	//Je¿eli bêdziemy chcieli bawic siê perspektyw¹, to trza to prze³o¿yæ to draw Scene
 	glMatrixMode(GL_PROJECTION);
 	glLoadMatrixf(value_ptr(game.SetPerspective()));
@@ -41,11 +29,11 @@ void drawScene(GLFWwindow* window) {
 
 	//Powiedzenie GLowi ¿e coœ siê dzieje - stary OpenGL ma 2 macierze tylko, P i MV
 	//Zostawiam to tutaj dlatego, ¿e praktycznie wszystkie operacje w openGLu to operacje na tych macierzach - po kija je wywalaæ poza
-	mat4 MMatrix = mat4(1.0f);
+	mat4 M = mat4(1.0f);
 	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(value_ptr(game.SetPlayerPosition()*MMatrix));
+	glLoadMatrixf(value_ptr(game.GetPlayerPositionMatrix()*M));
 
-	game.showLevelOne();
+	game.ShowLevelOne();
 
 	glfwSwapBuffers(window);
 }
@@ -94,6 +82,7 @@ int main(void)
 	double xCursorPos;
 	double yCursorPos;
 	#pragma endregion
+	game.SetLevelOne();
 
 	while (!glfwWindowShouldClose(window)) //Tak d³ugo jak okno nie powinno zostaæ zamkniête
 	{
@@ -105,11 +94,11 @@ int main(void)
 		glfwSetKeyCallback(window, keyCallback);
 		glfwSetMouseButtonCallback(window, mouseCallback);
 		glfwGetCursorPos(window, &xCursorPos, &yCursorPos);
-		cout << xCursorPos << " " << yCursorPos << endl;
 	#pragma endregion
 
 		glfwPollEvents(); //Wykonaj procedury callback w zaleznoœci od zdarzeñ jakie zasz³y.
 	}
 
+	delete &game;
 	delete openGLInitExit;
 }
