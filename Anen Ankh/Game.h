@@ -13,7 +13,8 @@
 class Game
 {
 private:
-	Player player = *(new Player(SetPlayerPositionMatrix(), SetPlayerPositionVector()));
+	//Player player = *(new Player(SetPlayerPositionMatrix(), SetPlayerPositionVector()));
+	Player player = *(new Player(vec3(0.0f, 0.0f, -50.0f)));
 	Level levelOne = *(new Level());
 
 public:
@@ -26,6 +27,12 @@ public:
 	mat4 SetPlayerPositionMatrix();
 	vec3 SetPlayerPositionVector();
 	mat4 GetPlayerPositionMatrix();
+	// Player's vectors
+	vec3 GetPlayerPositionVector();
+	vec3 GetPlayerViewVector();
+	//
+	Player * GetPlayer();
+
 	//Macierzy Modelu ni ma bo to raczej sprawa poszczególnych leveli
 
 	void SetLevelOne();
@@ -36,6 +43,11 @@ Game::~Game()
 {
 	delete &levelOne;
 	delete &player;
+}
+
+Player * Game::GetPlayer()
+{
+	return &player;
 }
 
 mat4 Game::SetPerspective()
@@ -59,9 +71,20 @@ vec3 Game::SetPlayerPositionVector()
 	return vec3(0.0f, 0.0f, 0.0f);
 }
 
+vec3 Game::GetPlayerPositionVector()
+{
+	return player.position;
+}
+
+vec3 Game::GetPlayerViewVector()
+{
+	return player.viewDirection;
+}
+
 mat4 Game::GetPlayerPositionMatrix()
 {
-	return player.positionMatrix;
+	//return player.positionMatrix;
+	return player.getWorldToViewMatrix();
 }
 
 void Game::SetLevelOne()
@@ -82,14 +105,16 @@ void Game::SetLevelOne()
 void Game::ShowLevelOne()
 {
 	//Tutaj reload przy œmierci, przejœcie do nastepnego poziomu przy wygranej itp.
-	levelOne.labirynth.ShowLabirynth(player.positionMatrix);
+	//levelOne.labirynth.ShowLabirynth(player.positionMatrix);
+	levelOne.labirynth.ShowLabirynth(player.getWorldToViewMatrix());
 
-	player.collider.ChangePositionOfCenter(player.positionVector);
-	player.GoFoward();
+	//player.collider.ChangePositionOfCenter(player.positionVector);
+	player.collider.ChangePositionOfCenter(player.position);
+	//player.GoFoward();
 
-	if (player.collider.DetectCollision(levelOne.labirynth.rooms[0].objects[0].collider) == false 
+	/*if (player.collider.DetectCollision(levelOne.labirynth.rooms[0].objects[0].collider) == false 
 		&& player.collider.DetectCollision(levelOne.labirynth.rooms[0].objects[1].collider) == false)
 	{
 		player.FallDown();
-	}
+	}*/
 }
