@@ -17,10 +17,9 @@ public:
 	CubeCollider3D collider;
 
 public:
-	Player();
-	//Player(mat4 positionMatrix, vec3 positionVector);
-	Player(vec3 newPosition);
+	Player(mat4 positionMatrix, vec3 positionVector);
 	~Player();
+	void SetCollider();
 };
 
 Player::~Player()
@@ -28,14 +27,14 @@ Player::~Player()
 	delete &collider;
 }
 
-Player::Player(vec3 newPosition) : Camera(newPosition) {}
-
-//Player::Player(mat4 positionMatrix, vec3 positionVector) 
-Player::Player() : Camera()
+Player::Player(mat4 positionMatrix, vec3 positionVector)
 {
-	
-	//this->positionMatrix = positionMatrix;
-	//this->positionVector = positionVector;
-	collider = *(new CubeCollider3D(vec3(position.x, position.y - 2.5, position.z), vec3(0, -2.5, 0), vec3(1, 5, 1)));
-	//collider = *(new CubeCollider3D(vec3(positionVector.x, positionVector.y-2.5, positionVector.z), vec3(0, -2.5, 0), vec3(1, 5, 1)));
+	this->positionMatrix = positionMatrix;
+	this->positionVector = positionVector;
+	collider = *(new CubeCollider3D(vec3(positionVector.x, positionVector.y - 2.5, positionVector.z), vec3(0, -1, 0), vec3(1, 3, 1)));
 };
+
+void Player::SetCollider()
+{
+	collider.position = vec3(positionVector.x, positionVector.y - 2.5, positionVector.z);
+}
