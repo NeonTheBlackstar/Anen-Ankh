@@ -98,9 +98,9 @@ void Game::SetLevelOne()
 	wallRight.SetCubeCollider(vec3(20, 0, 0), vec3(0, 0, 0), vec3(1, 100, 25));
 	room.AddObject(wallRight);
 
-	Construct stairs1 = *(new Construct("stairs", Construct::stairs, room.roomMatrix, *(new Texture("Texture\bricks.png")), vec3(20, 40, 0), vec3(5, 10, 17)));
-	stairs1.SetCubeCollider(vec3(20, 40, 0), vec3(0, 0, 0), vec3(5, 10, 17));
-	stairs1.SetLineCollider(5, 10, -6, -9);
+	Construct stairs1 = *(new Construct("stairs", Construct::stairs, room.roomMatrix, *(new Texture("Texture\bricks.png")), vec3(15, 33, 0), vec3(10, 17, 15)));
+	stairs1.SetCubeCollider(vec3(15, 50, 0), vec3(0, 0, 0), vec3(20, 100, 30));
+	stairs1.SetLineCollider(-7.5, 7.5f, 3.2f, -14.2f);
 	room.AddObject(stairs1);
 
 	Construct stairs2 = *(new Construct("stairs", Construct::stairs, room.roomMatrix, *(new Texture("Texture\bricks.png")), vec3(0, 0, -10), vec3(5, 10, 17), vec3(0, 1, 0), 90));
@@ -118,7 +118,9 @@ void Game::ShowLevelOne()
 
 	player.collider.ChangePositionOfCenter(player.positionVector);
 
-	if (player.collider.DetectCollision(levelOne.labirynth.rooms[0].objects[0].cubeCollider) == false)
+	if (player.collider.DetectCollision(levelOne.labirynth.rooms[0].objects[0].cubeCollider) == false 
+		)/*&& (player.collider.DetectCollision(levelOne.labirynth.rooms[0].objects[5].cubeCollider) == false 
+			&& levelOne.labirynth.rooms[0].objects[5].lineCollider.DetectCollision(player.collider.position.z, player.collider.position.y) == true))*/
 	{
 		player.FallDown();
 		player.SetCollider();
@@ -147,10 +149,10 @@ void Game::ShowLevelOne()
 	if (player.collider.DetectCollision(levelOne.labirynth.rooms[0].objects[5].cubeCollider))
 	{
 		cout << "YES" << endl;
-		/*while (levelOne.labirynth.rooms[0].objects[5].lineCollider.DetectCollision(player.collider.position.z, player.collider.position.y) == true)
+		while (levelOne.labirynth.rooms[0].objects[5].lineCollider.DetectCollision(player.collider.position.z, player.collider.position.y) == true)
 		{
 			player.GoUp();
 			player.SetCollider();
-		}*/
+		}
 	}
 }
