@@ -156,7 +156,6 @@
     <ClInclude Include="Collider.h" />
     <ClInclude Include="Construct.h" />
     <ClInclude Include="Game.h" />
-    <ClInclude Include="Texture.h" />
     <ClInclude Include="Labirynth.h" />
     <ClInclude Include="Level.h" />
     <ClInclude Include="OpenGLInitExit.h" />

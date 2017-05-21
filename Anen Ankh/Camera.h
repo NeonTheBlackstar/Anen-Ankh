@@ -6,76 +6,88 @@
 class Camera
 {
 public:
-	mat4 positionMatrix;
-	vec3 positionVector;
+	vec3 position;
+	vec3 viewDirection;
+	vec3 UP_VECTOR;
+	const float MOVEMENT_SPEED = .06f;
+	const float ROTATIONAL_SPEED = .0005f;
 
 public:
-	Camera() {};
-	~Camera() {};
+	Camera();
+	Camera(vec3 newPosition);
+	~Camera();
+
+	mat4 getWorldToViewMatrix();
 	void FallDown();
-	void GoUp();
+
+	/// Camera Movement ///
 	void GoFoward();
-	void GoBack();
-	void GoLeft();
-	void GoRight();
+	void GoBackward();
+	void StrafeLeft();
+	void StrafeRight();
 };
+
+Camera::Camera()
+{
+	//UP_VECTOR(0.0f, -1.0f, 0.0f), // Zmienic na +1.0f
+	UP_VECTOR = vec3(0.0f, 1.0f, 0.0f);
+	viewDirection = vec3(0.0f, 0.0f, -1.0f);
+	position = vec3(0.0f, 0.0f, 0.0f);
+}
+
+Camera::Camera(vec3 newPosition) : Camera()
+{
+	position = newPosition;
+}
+
+Camera::~Camera() 
+{
+}
+
+mat4 Camera::getWorldToViewMatrix()
+{
+	return lookAt(
+			position,
+			viewDirection + position,
+			UP_VECTOR
+			);
+}
 
 void Camera::GoFoward()
 {
-	positionVector = vec3(positionVector.x, positionVector.y, positionVector.z - 0.5f);
+	position += viewDirection * MOVEMENT_SPEED;
 
-	positionMatrix = lookAt(
-		vec3(positionVector.x, positionVector.y, positionVector.z),
-		vec3(positionVector.x, positionVector.y, positionVector.z - 1000.0f),
+	/*positionMatrix = lookAt(
+		vec3(positionVector.x, positionVector.y, positionVector.z + 1.0f),
+		vec3(positionVector.x, positionVector.y, positionVector.z - 50.0f),
 		vec3(0.0f, -1.0f, 0.0f));
+	positionVector = vec3(positionVector.x, positionVector.y, positionVector.z + 1.0f);*/
 }
 
-void Camera::GoBack()
+void Camera::GoBackward()
 {
-	positionVector = vec3(positionVector.x, positionVector.y, positionVector.z + 0.5f);
-
-	positionMatrix = lookAt(
-		vec3(positionVector.x, positionVector.y, positionVector.z),
-		vec3(positionVector.x, positionVector.y, positionVector.z - 1000.0f),
-		vec3(0.0f, -1.0f, 0.0f));
+	position -= viewDirection * MOVEMENT_SPEED;
 }
 
-void Camera::GoLeft()
+void Camera::StrafeLeft()
 {
-	positionVector = vec3(positionVector.x - 0.5f, positionVector.y, positionVector.z);
-
-	positionMatrix = lookAt(
-		vec3(positionVector.x, positionVector.y, positionVector.z),
-		vec3(positionVector.x, positionVector.y, positionVector.z - 1000.0f),
-		vec3(0.0f, -1.0f, 0.0f));
+	vec3 crossVector = cross(viewDirection, UP_VECTOR);
+	position += crossVector * MOVEMENT_SPEED;
 }
 
-void Camera::GoRight()
+void Camera::StrafeRight()
 {
-	positionVector = vec3(positionVector.x + 0.5f, positionVector.y, positionVector.z);
-
-	positionMatrix = lookAt(
-		vec3(positionVector.x, positionVector.y, positionVector.z),
-		vec3(positionVector.x, positionVector.y, positionVector.z - 1000.0f),
-		vec3(0.0f, -1.0f, 0.0f));
+	vec3 crossVector = cross(viewDirection, UP_VECTOR);
+	position -= crossVector * MOVEMENT_SPEED;
 }
 
 void Camera::FallDown()
 {
-	positionVector = vec3(positionVector.x, positionVector.y + 0.5f, positionVector.z);
-
-	positionMatrix = lookAt(
-		vec3(positionVector.x, positionVector.y, positionVector.z),
-		vec3(positionVector.x, positionVector.y, positionVector.z-1000.0f),
+	/*positionMatrix = lookAt(
+		vec3(positionVector.x, positionVector.y - 0.5, positionVector.z),
+		vec3(positionVector.x, positionVector.y - 0.5, positionVector.z - 50.f),
 		vec3(0.0f, -1.0f, 0.0f));
-}
+	positionVector = vec3(positionVector.x, positionVector.y - 0.5, positionVector.z);*/
 
-void Camera::GoUp()
-{
-	positionVector = vec3(positionVector.x, positionVector.y - 0.5f, positionVector.z);
-
-	positionMatrix = lookAt(
-		vec3(positionVector.x, positionVector.y, positionVector.z),
-		vec3(positionVector.x, positionVector.y, positionVector.z - 1000.0f),
-		vec3(0.0f, -1.0f, 0.0f));
+	//position = vec3(position.x, position.y - 0.5f, position.z);
 }
