@@ -1,93 +1,107 @@
 #pragma once
 
-//Jeœli tylko cokolwiek dotyczy kamery - powinno znaleŸæ siê tutaj
-//A w innych klasach byæ tylko wywo³ywane
+//Je¿ei tylko cokolwiek dotyczy kamery - powinno znaleŸæ siê tutaj
+//A w innych klasach by³o tylko wywo³ywane
 
 class Camera
 {
 public:
-	vec3 position;
-	vec3 viewDirection;
-	vec3 UP_VECTOR;
-	const float MOVEMENT_SPEED = .06f;
-	const float ROTATIONAL_SPEED = .0005f;
-
+	mat4 positionMatrix;
+	vec3 positionVector;
+	//Dodane
+	vec3 viewVector;
+	vec3 UP_vector;
+	float movementSpeed = 0.1f;
 public:
-	Camera();
-	Camera(vec3 newPosition);
-	~Camera();
-
-	mat4 getWorldToViewMatrix();
+	Camera() {};
+	~Camera() {};
 	void FallDown();
-
-	/// Camera Movement ///
+	void GoUp();
 	void GoFoward();
-	void GoBackward();
-	void StrafeLeft();
-	void StrafeRight();
+	void GoBack();
+	void GoLeft();
+	void GoRight();
+
+	void updateView(vec3 _viewVector);
 };
 
-Camera::Camera()
+void Camera::updateView(vec3 _viewVector)
 {
-	//UP_VECTOR(0.0f, -1.0f, 0.0f), // Zmienic na +1.0f
-	UP_VECTOR = vec3(0.0f, 1.0f, 0.0f);
-	viewDirection = vec3(0.0f, 0.0f, -1.0f);
-	position = vec3(0.0f, 0.0f, 0.0f);
-}
+	double radians = atan2(length(cross(_viewVector, UP_vector)), dot(_viewVector, UP_vector)); // Zakres wartosci od 0 do PI
+	
+	//double angle = acos(dot(_viewVector, UP_vector)) / (length(_viewVector) * length(UP_vector));
 
-Camera::Camera(vec3 newPosition) : Camera()
-{
-	position = newPosition;
-}
+	printf("!!!!!!!!!ANGLE: %f\n\n", radians);
 
-Camera::~Camera() 
-{
-}
+	if (radians <= 3.0f && radians >= 0.1f)
+	{
+		viewVector = _viewVector;
 
-mat4 Camera::getWorldToViewMatrix()
-{
-	return lookAt(
-			position,
-			viewDirection + position,
-			UP_VECTOR
-			);
+		positionMatrix = lookAt(
+			positionVector,
+			positionVector + viewVector,
+			UP_vector);
+	}
 }
 
 void Camera::GoFoward()
 {
-	position += viewDirection * MOVEMENT_SPEED;
+	positionVector += normalize(vec3(viewVector.x, 0.0f, viewVector.z)) * movementSpeed;
 
-	/*positionMatrix = lookAt(
-		vec3(positionVector.x, positionVector.y, positionVector.z + 1.0f),
-		vec3(positionVector.x, positionVector.y, positionVector.z - 50.0f),
-		vec3(0.0f, -1.0f, 0.0f));
-	positionVector = vec3(positionVector.x, positionVector.y, positionVector.z + 1.0f);*/
+	positionMatrix = lookAt(
+		positionVector,
+		viewVector + positionVector,
+		UP_vector);
 }
 
-void Camera::GoBackward()
+void Camera::GoBack()
 {
-	position -= viewDirection * MOVEMENT_SPEED;
+	positionVector -= normalize(vec3(viewVector.x, 0.0f, viewVector.z)) * movementSpeed;
+
+	positionMatrix = lookAt(
+		positionVector,
+		viewVector + positionVector,
+		UP_vector);
 }
 
-void Camera::StrafeLeft()
+void Camera::GoLeft()
 {
-	vec3 crossVector = cross(viewDirection, UP_VECTOR);
-	position += crossVector * MOVEMENT_SPEED;
+	vec3 crossVector = cross(viewVector, UP_vector);
+	positionVector -= crossVector * movementSpeed;
+
+	positionMatrix = lookAt(
+		positionVector,
+		viewVector + positionVector,
+		UP_vector);
 }
 
-void Camera::StrafeRight()
+void Camera::GoRight()
 {
-	vec3 crossVector = cross(viewDirection, UP_VECTOR);
-	position -= crossVector * MOVEMENT_SPEED;
+	vec3 crossVector = cross(viewVector, UP_vector);
+	positionVector += crossVector * movementSpeed;
+
+	positionMatrix = lookAt(
+		positionVector,
+		viewVector + positionVector,
+		UP_vector);
 }
 
 void Camera::FallDown()
 {
-	/*positionMatrix = lookAt(
-		vec3(positionVector.x, positionVector.y - 0.5, positionVector.z),
-		vec3(positionVector.x, positionVector.y - 0.5, positionVector.z - 50.f),
-		vec3(0.0f, -1.0f, 0.0f));
-	positionVector = vec3(positionVector.x, positionVector.y - 0.5, positionVector.z);*/
+	positionVector = vec3(positionVector.x, positionVector.y + 0.5f, positionVector.z);
 
-	//position = vec3(position.x, position.y - 0.5f, position.z);
+	positionMatrix = lookAt(
+		positionVector,
+		viewVector + positionVector,
+		UP_vector);
+}
+
+void Camera::GoUp()
+{
+	positionVector = vec3(positionVector.x, positionVector.y - 0.5f, positionVector.z);
+
+	positionMatrix = lookAt(
+		positionVector,
+		viewVector + positionVector,
+		UP_vector);
 }
