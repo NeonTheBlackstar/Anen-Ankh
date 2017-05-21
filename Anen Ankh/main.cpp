@@ -1,4 +1,3 @@
-//Trza to potem pousuwaæ ¿eby niedublowaæ inkludów
 #include "OpenGLInitExit.h"
 #include "Game.h"
 
@@ -10,99 +9,66 @@ using namespace std;
 //Np idŸ w przód to bêdzie od razu idŸ w przód i 
 //sprawdŸ czy nadal trzymasz siê kolizji czy spadasz.
 Game game = *(new Game());
+GLuint tex;
 
-/// Dirty globals for getting cursor on window 2D position - need to be replaced ///
-double X_WINDOW = 0.0f; // nie lepiej centrum ekranu tu podac, koordynaty?
-double Y_WINDOW = 0.0f;
-bool holdMouse = false;
-
-//Procedura inicjuj¹ca
-void initOpenGLProgram() {
-
-	//************Tutaj umieszczaj kod, który nale¿y wykonaæ raz, na pocz¹tku programu************
-	glClearColor(0, 0, 0, 1);
+void initOpenGLProgram(GLFWwindow* window) {
 	//Je¿eli bêdziemy chcieli bawic siê perspektyw¹, to trza to prze³o¿yæ to draw Scene
 
-	glEnable(GL_LIGHTING); //W³¹cz tryb cieniowania
-	glEnable(GL_LIGHT0); //W³¹cz domyœlne zerowe Ÿród³o œwiat³a
-	glEnable(GL_DEPTH_TEST);
+	glClearColor(0, 0, 0, 1);
 
-	glMatrixMode(GL_PROJECTION);
-	glLoadMatrixf(value_ptr(game.SetPerspective()));
+	//glEnable(GL_LIGHTING);
+	//glEnable(GL_LIGHT2);
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_NORMALIZE);
+
+	std::vector<unsigned char> image;
+	unsigned width, height;
+	unsigned error = lodepng::decode(image, width, height, "bricks.png");
+
+	glGenTextures(1, &tex);
+	glBindTexture(GL_TEXTURE_2D, tex);
+	glTexImage2D(GL_TEXTURE_2D, 0, 4, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char*)image.data());
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 }
 
-//Procedura rysuj¹ca zawartoœæ sceny
 void drawScene(GLFWwindow* window) {
-
-	//************Tutaj umieszczaj kod rysuj¹cy obraz******************l
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	//Powiedzenie GLowi ¿e coœ siê dzieje - stary OpenGL ma 2 macierze tylko, P i MV
-	//Zostawiam to tutaj dlatego, ¿e praktycznie wszystkie operacje w openGLu to operacje na tych macierzach - po kija je wywalaæ poza
-	mat4 M = mat4(1.0f);
-	glMatrixMode(GL_MODELVIEW);
-
-	mat4 V = lookAt(
-		game.GetPlayerPositionVector(),
-		game.GetPlayerViewVector() + game.GetPlayerPositionVector(),
-		vec3(0.0f,1.0f,0.0f)
-		);
-
-	glLoadMatrixf(value_ptr(V*M));
-
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Wyczyœæ bufor kolorów (czyli przygotuj "p³ótno" do rysowania)
+	glMatrixMode(GL_PROJECTION); //W³¹cz tryb modyfikacji macierzy rzutowania
+	glLoadMatrixf(value_ptr(game.SetPerspective())); //Za³aduj macierz rzutowania
 	game.ShowLevelOne();
-
-	mat4 Mtemp = translate(M, vec3(0.0f, 0.0f, -30.0f));
-
-	//printf("%f | %f | %f\n", game.GetPlayerViewVector().x, game.GetPlayerViewVector().y, game.GetPlayerViewVector().z);
-	//printf("%f | %f | %f\n", game.GetPlayerPositionVector().x, game.GetPlayerPositionVector().y, game.GetPlayerPositionVector().z);
-
-	Mtemp = scale(Mtemp, vec3(0.5, 0.5, 0.5));
-	glLoadMatrixf(value_ptr(Mtemp*V));
-
-	glutSolidCube(1);
-
-	glfwSwapBuffers(window);
+	glfwSwapBuffers(window); //Przerzuæ tylny bufor na przedni
 }
 
 #pragma region EXTERNAL INPUT
 void keyCallback(GLFWwindow*window, int key, int scancode, int action, int mods)
 {
-	/// Camera Movement ///
-	if (key == GLFW_KEY_W)
+	//if (action == GLFW_PRESS) {
+	if (key == GLFW_KEY_D && game.canGoLeft)
 	{
-		game.GetPlayer()->GoFoward();
+		game.player.GoRight();
+		game.player.SetCollider();
 	}
 
-	if (key == GLFW_KEY_S)
+	if (key == GLFW_KEY_A && game.canGoRight)
 	{
-		game.GetPlayer()->GoBackward();
+		game.player.GoLeft();
+		game.player.SetCollider();
 	}
 
-	if (key == GLFW_KEY_A)
+	if (key == GLFW_KEY_W && game.canGoFoward)
 	{
-		game.GetPlayer()->StrafeLeft();
+		game.player.GoFoward();
+		game.player.SetCollider();
 	}
 
-	if (key == GLFW_KEY_D)
+	if (key == GLFW_KEY_S && game.canGoBack)
 	{
-		game.GetPlayer()->StrafeRight();
+		game.player.GoBack();
+		game.player.SetCollider();
 	}
-	/// END ///
-
-	if (action == GLFW_PRESS) {
-		if (key == GLFW_KEY_A)
-			printf("A\n");
-		if (key == GLFW_KEY_D)
-			printf("D\n");
-		if (key == GLFW_KEY_W && (mods&GLFW_MOD_ALT) != 0)
-			printf("ALT + W\n");
-
-	}
-	if (action == GLFW_RELEASE) {
-		if (key == GLFW_KEY_W)
-			printf("puszczone W\n");
-	}
+	//}
 }
 
 bool mouseRightClick = false;
@@ -110,12 +76,6 @@ void mouseCallback(GLFWwindow*window, int button, int action, int mods)
 {
 	if (action == GLFW_PRESS)
 	{
-		if (button == GLFW_MOUSE_BUTTON_LEFT)
-		{
-			glfwGetCursorPos(window, &X_WINDOW, &Y_WINDOW);
-			holdMouse = true;
-		}
-
 		if (button == GLFW_MOUSE_BUTTON_RIGHT)
 			mouseRightClick = true;
 	}
@@ -123,11 +83,6 @@ void mouseCallback(GLFWwindow*window, int button, int action, int mods)
 	{
 		if (button == GLFW_MOUSE_BUTTON_RIGHT)
 			mouseRightClick = false;
-
-		if (button == GLFW_MOUSE_BUTTON_LEFT)
-		{
-			holdMouse = false;
-		}
 	}
 }
 #pragma endregion
@@ -137,48 +92,55 @@ int main(void)
 	OpenGLInitExit* openGLInitExit = new OpenGLInitExit();
 	GLFWwindow* window = (*openGLInitExit).initLibsAndWindow();
 
-	initOpenGLProgram(); //Operacje inicjuj¹ce
+	initOpenGLProgram(window); //Operacje inicjuj¹ce
 
-	#pragma region EXTERNAL INPUT
-	double xCursorPos;
-	double yCursorPos;
-	#pragma endregion
+#pragma region EXTERNAL INPUT
+	double xCursorPos = 0.0f;
+	double yCursorPos = 0.0f;
+	double new_xCursorPos, new_yCursorPos;
+	float xMotionDelta, yMotionDelta;
+#pragma endregion
+
 	game.SetLevelOne();
 
 	while (!glfwWindowShouldClose(window)) //Tak d³ugo jak okno nie powinno zostaæ zamkniête
 	{
-		/// Camera Rotator ///
-		if (holdMouse == true)
-		{
-			double newX, newY;
-			glfwGetCursorPos(window, &newX, &newY);
-
-			float xDelta = -float(newX - X_WINDOW);
-			float yDelta = -float(newY - Y_WINDOW);
-
-			vec3 crossVector = cross(game.GetPlayerViewVector(), game.GetPlayer()->UP_VECTOR);
-			mat4 rotator = rotate(mat4(1.0f), xDelta * game.GetPlayer()->ROTATIONAL_SPEED, game.GetPlayer()->UP_VECTOR) *
-				rotate(mat4(1.0f), yDelta * game.GetPlayer()->ROTATIONAL_SPEED, crossVector);
-
-			game.GetPlayer()->viewDirection = mat3(rotator) * game.GetPlayer()->viewDirection;
-
-			X_WINDOW = newX;
-			Y_WINDOW = newY;
-
-			printf("VIEW: %f | %f | %f\n", game.GetPlayerViewVector().x, game.GetPlayerViewVector().y, game.GetPlayerViewVector().z);
-			printf("POS: %f | %f | %f\n", game.GetPlayerPositionVector().x, game.GetPlayerPositionVector().y, game.GetPlayerPositionVector().z);
-		}
-		/// END ///
-
 		drawScene(window); //Wykonaj procedurê rysuj¹c¹
 
-	#pragma region EXTERNAL INPUT
+#pragma region HANDLE MOUSE MOTION
+		if (mouseRightClick == true) {
+			glfwGetCursorPos(window, &new_xCursorPos, &new_yCursorPos);
+			xMotionDelta = -float(new_xCursorPos - xCursorPos);
+			yMotionDelta = -float(new_yCursorPos - yCursorPos);
+
+			vec3 viewDirection = game.player.viewVector;
+			float speed = 0.01f;
+
+			vec3 crossVector = cross(viewDirection, game.player.UP_vector);
+			mat4 rotator = rotate(mat4(1.0f), xMotionDelta * speed, game.player.UP_vector) *
+				rotate(mat4(1.0f), yMotionDelta * speed, crossVector);
+
+			viewDirection = mat3(rotator) * viewDirection;
+
+			game.player.updateView(viewDirection);
+
+			xCursorPos = new_xCursorPos;
+			yCursorPos = new_yCursorPos;
+
+			/*printf("|| (%f, %f, %f) | (%f, %f, %f) | (%f, %f, %f) ||\n",
+			game.player.positionVector.x, game.player.positionVector.y, game.player.positionVector.z,
+			game.player.viewVector.x, game.player.viewVector.y, game.player.viewVector.z,
+			game.player.UP_vector.x, game.player.UP_vector.y, game.player.UP_vector.z);*/
+		}
+#pragma endregion
+
+#pragma region EXTERNAL INPUT
 		//Musz¹ byæ tutaj poniewa¿ jak siê wsadzi do klasy, to niema zainicjowanego glfw
 		//Funkcje tak samo, bo wywo³aniez klasy nie dzia³a
 		glfwSetKeyCallback(window, keyCallback);
 		glfwSetMouseButtonCallback(window, mouseCallback);
 		glfwGetCursorPos(window, &xCursorPos, &yCursorPos);
-	#pragma endregion
+#pragma endregion
 
 		glfwPollEvents(); //Wykonaj procedury callback w zaleznoœci od zdarzeñ jakie zasz³y.
 	}
@@ -186,3 +148,4 @@ int main(void)
 	delete &game;
 	delete openGLInitExit;
 }
+

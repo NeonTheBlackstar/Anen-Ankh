@@ -58,7 +58,7 @@ void OpenGLInitExit::initGlfw()
 
 void OpenGLInitExit::initWindow()
 {
-	window = glfwCreateWindow(GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), "Anen Ankh", glfwGetPrimaryMonitor(), NULL);  //Utwórz okno 500x500 o tytule "OpenGL" i kontekst OpenGL.
+	window = glfwCreateWindow(/*GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN)*/500,500, "Anen Ankh", /*glfwGetPrimaryMonitor()*/NULL, NULL);  //Utwórz okno 500x500 o tytule "OpenGL" i kontekst OpenGL.
 
 	if (!window) //Je¿eli okna nie uda³o siê utworzyæ, to zamknij program
 	{

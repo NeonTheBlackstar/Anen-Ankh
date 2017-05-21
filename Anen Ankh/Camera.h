@@ -28,8 +28,6 @@ public:
 void Camera::updateView(vec3 _viewVector)
 {
 	double radians = atan2(length(cross(_viewVector, UP_vector)), dot(_viewVector, UP_vector)); // Zakres wartosci od 0 do PI
-	
-	//double angle = acos(dot(_viewVector, UP_vector)) / (length(_viewVector) * length(UP_vector));
 
 	printf("!!!!!!!!!ANGLE: %f\n\n", radians);
 
@@ -66,7 +64,7 @@ void Camera::GoBack()
 
 void Camera::GoLeft()
 {
-	vec3 crossVector = cross(viewVector, UP_vector);
+	vec3 crossVector = normalize(cross(viewVector, UP_vector));
 	positionVector -= crossVector * movementSpeed;
 
 	positionMatrix = lookAt(
@@ -77,7 +75,7 @@ void Camera::GoLeft()
 
 void Camera::GoRight()
 {
-	vec3 crossVector = cross(viewVector, UP_vector);
+	vec3 crossVector = normalize(cross(viewVector, UP_vector));
 	positionVector += crossVector * movementSpeed;
 
 	positionMatrix = lookAt(
