@@ -85,6 +85,9 @@ mat4 Game::GetPlayerPositionMatrix()
 
 void Game::SetLevelOne()
 {
+
+#pragma region ROOM_1
+
 	Room room = *(new Room(vec3(0, 0, 0), vec3(25, 50, 25)));
 
 	Construct floor = *(new Construct("floor", Construct::cube, room.roomMatrix, *(new Texture("Texture\bricks.png")), vec3(0, 50, 0), vec3(25, 0.1f, 25)));
@@ -120,7 +123,132 @@ void Game::SetLevelOne()
 	//stairs.SetLineCollider(0, 50, 1, -50);
 	room.AddObject(stairs2);
 
+#pragma endregion
+
+#pragma region ROOM_2
+	Room room2 = *(new Room(vec3(0, -75, 0), vec3(75, 25, 75)));
+
+	Construct floor1 = *(new Construct("floor", Construct::cube, room2.roomMatrix, *(new Texture("Texture\bricks.png")), vec3(50, 25, 0), vec3(25, 0.1f, 25)));
+	floor1.SetCubeCollider(vec3(50, 50, 0), vec3(0, 0, 0), vec3(50, 0.1f, 50));
+	room2.AddObject(floor1);
+
+	Construct floor2 = *(new Construct("floor", Construct::cube, room2.roomMatrix, *(new Texture("Texture\bricks.png")), vec3(0, 25, 50), vec3(75, 0.1f, 25)));
+	floor2.SetCubeCollider(vec3(0, 50, 0), vec3(0, 0, 0), vec3(50, 0.1f, 50));
+	room2.AddObject(floor2);
+
+	Construct floor3 = *(new Construct("floor", Construct::cube, room2.roomMatrix, *(new Texture("Texture\bricks.png")), vec3(-50, 25, 0), vec3(25, 0.1f, 25)));
+	floor3.SetCubeCollider(vec3(0, 50, 0), vec3(0, 0, 0), vec3(50, 0.1f, 50));
+	room2.AddObject(floor3);
+
+	Construct floor4 = *(new Construct("floor", Construct::cube, room2.roomMatrix, *(new Texture("Texture\bricks.png")), vec3(0, 25, -50), vec3(75, 0.1f, 25)));
+	floor4.SetCubeCollider(vec3(0, 50, 0), vec3(0, 0, 0), vec3(50, 0.1f, 50));
+	room2.AddObject(floor4);
+
+	Construct roof = *(new Construct("floor", Construct::cube, room2.roomMatrix, *(new Texture("Texture\bricks.png")), vec3(0, -25+1, 15), vec3(75, 1, 60)));
+	roof.SetCubeCollider(vec3(0, -10, 0), vec3(0, 0, 0), vec3(50, 1, 100));
+	room2.AddObject(roof);
+
+	Construct roof1 = *(new Construct("floor", Construct::cube, room2.roomMatrix, *(new Texture("Texture\bricks.png")), vec3(50, -25+1, -60), vec3(25, 1, 15)));
+	roof1.SetCubeCollider(vec3(0, -10, 0), vec3(0, 0, 0), vec3(50, 1, 100));
+	room2.AddObject(roof1);
+
+	Construct roof2 = *(new Construct("floor", Construct::cube, room2.roomMatrix, *(new Texture("Texture\bricks.png")), vec3(-50, -25+1, -60), vec3(25, 1, 15)));
+	roof1.SetCubeCollider(vec3(0, -10, 0), vec3(0, 0, 0), vec3(50, 1, 100));
+	room2.AddObject(roof2);
+
+	wallFront = *(new Construct("floor", Construct::cube, room2.roomMatrix, *(new Texture("Texture\bricks.png")), vec3(0, 0, -75), vec3(75, 25, 0.1f)));
+	wallFront.SetCubeCollider(vec3(0, 0, -20), vec3(0, 0, 0), vec3(25, 100, 1));
+	room2.AddObject(wallFront);
+
+	wallBack = *(new Construct("floor", Construct::cube, room2.roomMatrix, *(new Texture("Texture\bricks.png")), vec3(0, 0, 75), vec3(75, 25, 0.1f)));
+	wallBack.SetCubeCollider(vec3(0, 0, 20), vec3(0, 0, 0), vec3(25, 100, 1));
+	room2.AddObject(wallBack);
+
+	/////
+	Construct wallLeft1 = *(new Construct("floor", Construct::cube, room2.roomMatrix, *(new Texture("Texture\bricks.png")), vec3(-75, 17, 40), vec3(0.1f, 8, 35)));
+	wallLeft1.SetCubeCollider(vec3(-20, 0, 0), vec3(0, 0, 0), vec3(1, 100, 25));
+	room2.AddObject(wallLeft1);
+
+	Construct wallLeft2 = *(new Construct("floor", Construct::cube, room2.roomMatrix, *(new Texture("Texture\bricks.png")), vec3(-75, 17, -40), vec3(0.1f, 8, 35)));
+	wallLeft2.SetCubeCollider(vec3(-20, 0, 0), vec3(0, 0, 0), vec3(1, 100, 25));
+	room2.AddObject(wallLeft2);
+
+	Construct wallLeft3 = *(new Construct("floor", Construct::cube, room2.roomMatrix, *(new Texture("Texture\bricks.png")), vec3(-75, -8.5, 0), vec3(0.1f, 17.5, 75)));
+	wallLeft3.SetCubeCollider(vec3(-20, 0, 0), vec3(0, 0, 0), vec3(1, 100, 25));
+	room2.AddObject(wallLeft3);
+	/////
+
+	wallRight = *(new Construct("floor", Construct::cube, room2.roomMatrix, *(new Texture("Texture\bricks.png")), vec3(75, 0, 0), vec3(0.1f, 25, 75)));
+	wallRight.SetCubeCollider(vec3(20, 0, 0), vec3(0, 0, 0), vec3(1, 100, 25));
+	room2.AddObject(wallRight);
+
+#pragma endregion
+
+#pragma region ROOM_3
+	Room room3 = *(new Room(vec3(0, -75, 10), vec3(75, 25, 75)));
+
+	floor = *(new Construct("floor", Construct::cube, room2.roomMatrix, *(new Texture("Texture\bricks.png")), vec3(-85, 25, 0), vec3(10, 0.1f, 5)));
+	floor.SetCubeCollider(vec3(50, 50, 0), vec3(0, 0, 0), vec3(50, 0.1f, 50));
+	room3.AddObject(floor);
+
+	roof = *(new Construct("floor", Construct::cube, room2.roomMatrix, *(new Texture("Texture\bricks.png")), vec3(-85, 9, 0), vec3(10, 0.1f, 5)));
+	roof.SetCubeCollider(vec3(0, -10, 0), vec3(0, 0, 0), vec3(50, 1, 100));
+	room3.AddObject(roof);
+
+	wallFront = *(new Construct("floor", Construct::cube, room2.roomMatrix, *(new Texture("Texture\bricks.png")), vec3(-85, 17, -5), vec3(10, 8, 0.1f)));
+	wallFront.SetCubeCollider(vec3(0, 0, -20), vec3(0, 0, 0), vec3(25, 100, 1));
+	room3.AddObject(wallFront);
+
+	wallBack = *(new Construct("floor", Construct::cube, room2.roomMatrix, *(new Texture("Texture\bricks.png")), vec3(-85, 17, 5), vec3(10, 8, 0.1f)));
+	wallBack.SetCubeCollider(vec3(0, 0, 20), vec3(0, 0, 0), vec3(25, 100, 1));
+	room3.AddObject(wallBack);
+
+	/*wallLeft = *(new Construct("floor", Construct::cube, room2.roomMatrix, *(new Texture("Texture\bricks.png")), vec3(-75, 17, 40), vec3(0.1f, 8, 35)));
+	wallLeft.SetCubeCollider(vec3(-20, 0, 0), vec3(0, 0, 0), vec3(1, 100, 25));
+	room3.AddObject(wallLeft);
+
+	wallRight = *(new Construct("floor", Construct::cube, room2.roomMatrix, *(new Texture("Texture\bricks.png")), vec3(75, 0, 0), vec3(0.1f, 25, 75)));
+	wallRight.SetCubeCollider(vec3(20, 0, 0), vec3(0, 0, 0), vec3(1, 100, 25));
+	room3.AddObject(wallRight);
+*/
+#pragma endregion
+
+	
+#pragma region ROOM_4
+	/*
+	Room room3 = *(new Room(vec3(0, -75, 10), vec3(75, 25, 75)));
+
+	floor = *(new Construct("floor", Construct::cube, room2.roomMatrix, *(new Texture("Texture\bricks.png")), vec3(-85, 25, 0), vec3(10, 0.1f, 5)));
+	floor.SetCubeCollider(vec3(50, 50, 0), vec3(0, 0, 0), vec3(50, 0.1f, 50));
+	room3.AddObject(floor);
+
+	roof = *(new Construct("floor", Construct::cube, room2.roomMatrix, *(new Texture("Texture\bricks.png")), vec3(-85, 9, 0), vec3(10, 0.1f, 5)));
+	roof.SetCubeCollider(vec3(0, -10, 0), vec3(0, 0, 0), vec3(50, 1, 100));
+	room3.AddObject(roof);
+
+	wallFront = *(new Construct("floor", Construct::cube, room2.roomMatrix, *(new Texture("Texture\bricks.png")), vec3(-85, 17, -5), vec3(10, 8, 0.1f)));
+	wallFront.SetCubeCollider(vec3(0, 0, -20), vec3(0, 0, 0), vec3(25, 100, 1));
+	room3.AddObject(wallFront);
+
+	wallBack = *(new Construct("floor", Construct::cube, room2.roomMatrix, *(new Texture("Texture\bricks.png")), vec3(-85, 17, 5), vec3(10, 8, 0.1f)));
+	wallBack.SetCubeCollider(vec3(0, 0, 20), vec3(0, 0, 0), vec3(25, 100, 1));
+	room3.AddObject(wallBack);
+
+	/*wallLeft = *(new Construct("floor", Construct::cube, room2.roomMatrix, *(new Texture("Texture\bricks.png")), vec3(-75, 17, 40), vec3(0.1f, 8, 35)));
+	wallLeft.SetCubeCollider(vec3(-20, 0, 0), vec3(0, 0, 0), vec3(1, 100, 25));
+	room3.AddObject(wallLeft);
+
+	wallRight = *(new Construct("floor", Construct::cube, room2.roomMatrix, *(new Texture("Texture\bricks.png")), vec3(75, 0, 0), vec3(0.1f, 25, 75)));
+	wallRight.SetCubeCollider(vec3(20, 0, 0), vec3(0, 0, 0), vec3(1, 100, 25));
+	room3.AddObject(wallRight);
+	*/
+#pragma endregion
+
+
 	levelOne.labirynth.AddRoom(room);
+	levelOne.labirynth.AddRoom(room2);
+	levelOne.labirynth.AddRoom(room3);
+
 }
 
 void Game::ShowLevelOne()

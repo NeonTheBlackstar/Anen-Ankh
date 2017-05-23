@@ -45,28 +45,70 @@ void drawScene(GLFWwindow* window) {
 void keyCallback(GLFWwindow*window, int key, int scancode, int action, int mods)
 {
 	//if (action == GLFW_PRESS) {
-	if (key == GLFW_KEY_D && game.canGoLeft)
+
+	if (game.player.noClip == false)
 	{
-		game.player.GoRight();
-		game.player.SetCollider();
+		if (key == GLFW_KEY_D && game.canGoLeft)
+		{
+			game.player.GoRight();
+			game.player.SetCollider();
+		}
+
+		if (key == GLFW_KEY_A && game.canGoRight)
+		{
+			game.player.GoLeft();
+			game.player.SetCollider();
+		}
+
+		if (key == GLFW_KEY_W && game.canGoFoward)
+		{
+			game.player.GoFoward();
+			game.player.SetCollider();
+		}
+
+		if (key == GLFW_KEY_S && game.canGoBack)
+		{
+			game.player.GoBack();
+			game.player.SetCollider();
+		}
+	}
+	else if (game.player.noClip == true)
+	{
+		if (key == GLFW_KEY_D && game.canGoLeft)
+		{
+			game.player.GoRight(true);
+		}
+
+		if (key == GLFW_KEY_A && game.canGoRight)
+		{
+			game.player.GoLeft(true);
+		}
+
+		if (key == GLFW_KEY_W && game.canGoFoward)
+		{
+			game.player.GoFoward(true);
+		}
+
+		if (key == GLFW_KEY_S && game.canGoBack)
+		{
+			game.player.GoBack(true);
+		}
+
+		if (key == GLFW_KEY_R)
+		{
+			game.player.GoUp();
+		}
+		if (key == GLFW_KEY_F)
+		{
+			game.player.GoDown();
+		}
 	}
 
-	if (key == GLFW_KEY_A && game.canGoRight)
-	{
-		game.player.GoLeft();
-		game.player.SetCollider();
-	}
-
-	if (key == GLFW_KEY_W && game.canGoFoward)
-	{
-		game.player.GoFoward();
-		game.player.SetCollider();
-	}
-
-	if (key == GLFW_KEY_S && game.canGoBack)
-	{
-		game.player.GoBack();
-		game.player.SetCollider();
+	if (action == GLFW_PRESS) {
+		if (key == GLFW_KEY_N)
+		{
+			game.player.noClip = game.player.noClip == true ? false : true;
+		}
 	}
 	//}
 }
