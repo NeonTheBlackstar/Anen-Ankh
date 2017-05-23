@@ -17,10 +17,11 @@ public:
 	~Camera() {};
 	void FallDown();
 	void GoUp();
-	void GoFoward();
-	void GoBack();
-	void GoLeft();
-	void GoRight();
+	void GoDown();
+	void GoFoward(bool fly);
+	void GoBack(bool fly);
+	void GoLeft(bool fly);
+	void GoRight(bool fly);
 
 	void updateView(vec3 _viewVector);
 };
@@ -42,9 +43,12 @@ void Camera::updateView(vec3 _viewVector)
 	}
 }
 
-void Camera::GoFoward()
+void Camera::GoFoward(bool fly = false)
 {
-	positionVector += normalize(vec3(viewVector.x, 0.0f, viewVector.z)) * movementSpeed;
+	if(fly)
+		positionVector += normalize(viewVector) * movementSpeed * 10.0f;
+	else
+		positionVector += normalize(vec3(viewVector.x, 0.0f, viewVector.z)) * movementSpeed;
 
 	positionMatrix = lookAt(
 		positionVector,
@@ -52,9 +56,12 @@ void Camera::GoFoward()
 		UP_vector);
 }
 
-void Camera::GoBack()
+void Camera::GoBack(bool fly = false)
 {
-	positionVector -= normalize(vec3(viewVector.x, 0.0f, viewVector.z)) * movementSpeed;
+	if (fly)
+		positionVector -= normalize(viewVector) * movementSpeed * 10.0f;
+	else
+		positionVector -= normalize(vec3(viewVector.x, 0.0f, viewVector.z)) * movementSpeed;
 
 	positionMatrix = lookAt(
 		positionVector,
@@ -62,10 +69,14 @@ void Camera::GoBack()
 		UP_vector);
 }
 
-void Camera::GoLeft()
+void Camera::GoLeft(bool fly = false)
 {
 	vec3 crossVector = normalize(cross(viewVector, UP_vector));
-	positionVector -= crossVector * movementSpeed;
+
+	if (fly)
+		positionVector -= crossVector * movementSpeed * 10.0f;
+	else
+		positionVector -= crossVector * movementSpeed;
 
 	positionMatrix = lookAt(
 		positionVector,
@@ -73,10 +84,14 @@ void Camera::GoLeft()
 		UP_vector);
 }
 
-void Camera::GoRight()
+void Camera::GoRight(bool fly = false)
 {
 	vec3 crossVector = normalize(cross(viewVector, UP_vector));
-	positionVector += crossVector * movementSpeed;
+
+	if (fly)
+		positionVector += crossVector * movementSpeed * 10.0f;
+	else
+		positionVector += crossVector * movementSpeed;
 
 	positionMatrix = lookAt(
 		positionVector,
@@ -97,6 +112,16 @@ void Camera::FallDown()
 void Camera::GoUp()
 {
 	positionVector = vec3(positionVector.x, positionVector.y - 0.5f, positionVector.z);
+
+	positionMatrix = lookAt(
+		positionVector,
+		viewVector + positionVector,
+		UP_vector);
+}
+
+void Camera::GoDown()
+{
+	positionVector = vec3(positionVector.x, positionVector.y + 0.5f, positionVector.z);
 
 	positionMatrix = lookAt(
 		positionVector,

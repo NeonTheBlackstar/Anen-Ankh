@@ -129,43 +129,49 @@ void Game::ShowLevelOne()
 	
 	levelOne.labirynth.ShowLabirynth(player.positionMatrix);
 
-	player.collider.ChangePositionOfCenter(player.positionVector);
-
-	if (player.collider.DetectCollision(levelOne.labirynth.rooms[0].objects[0].cubeCollider) == false 
-		)/*&& (player.collider.DetectCollision(levelOne.labirynth.rooms[0].objects[5].cubeCollider) == false 
-			&& levelOne.labirynth.rooms[0].objects[5].lineCollider.DetectCollision(player.collider.position.z, player.collider.position.y) == true))*/
+	if (player.noClip == false)
 	{
-		player.FallDown();
-		player.SetCollider();
-	}
 
-	if (player.collider.DetectCollision(levelOne.labirynth.rooms[0].objects[1].cubeCollider))
-		canGoFoward = false;
-	else
-		canGoFoward = true;
+		player.collider.ChangePositionOfCenter(player.positionVector);
 
-	if (player.collider.DetectCollision(levelOne.labirynth.rooms[0].objects[2].cubeCollider))
-		canGoBack = false;
-	else
-		canGoBack = true;
-
-	if (player.collider.DetectCollision(levelOne.labirynth.rooms[0].objects[3].cubeCollider))
-		canGoLeft = false;
-	else
-		canGoLeft = true;
-
-	if (player.collider.DetectCollision(levelOne.labirynth.rooms[0].objects[4].cubeCollider))
-		canGoRight = false;
-	else
-		canGoRight = true;
-
-	if (player.collider.DetectCollision(levelOne.labirynth.rooms[0].objects[5].cubeCollider))
-	{
-		cout << "YES" << endl;
-		while (levelOne.labirynth.rooms[0].objects[5].lineCollider.DetectCollision(player.collider.position.z, player.collider.position.y) == true)
+		if (player.collider.DetectCollision(levelOne.labirynth.rooms[0].objects[0].cubeCollider) == false
+			)/*&& (player.collider.DetectCollision(levelOne.labirynth.rooms[0].objects[5].cubeCollider) == false
+				&& levelOne.labirynth.rooms[0].objects[5].lineCollider.DetectCollision(player.collider.position.z, player.collider.position.y) == true))*/
 		{
-			player.GoUp();
+
+			player.FallDown();
 			player.SetCollider();
 		}
+
+		if (player.collider.DetectCollision(levelOne.labirynth.rooms[0].objects[1].cubeCollider))
+			canGoFoward = false;
+		else
+			canGoFoward = true;
+
+		if (player.collider.DetectCollision(levelOne.labirynth.rooms[0].objects[2].cubeCollider))
+			canGoBack = false;
+		else
+			canGoBack = true;
+
+		if (player.collider.DetectCollision(levelOne.labirynth.rooms[0].objects[3].cubeCollider))
+			canGoLeft = false;
+		else
+			canGoLeft = true;
+
+		if (player.collider.DetectCollision(levelOne.labirynth.rooms[0].objects[4].cubeCollider))
+			canGoRight = false;
+		else
+			canGoRight = true;
+
+		if (player.collider.DetectCollision(levelOne.labirynth.rooms[0].objects[5].cubeCollider))
+		{
+			cout << "YES" << endl;
+			while (levelOne.labirynth.rooms[0].objects[5].lineCollider.DetectCollision(player.collider.position.z, player.collider.position.y) == true)
+			{
+				player.GoUp();
+				player.SetCollider();
+			}
+		}
+
 	}
 }

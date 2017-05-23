@@ -15,6 +15,7 @@ class Player : public Camera
 {
 public:
 	CubeCollider3D collider;
+	bool noClip = false;
 
 public:
 	Player(mat4 positionMatrix, vec3 positionVector);
