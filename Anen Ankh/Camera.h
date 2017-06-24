@@ -45,10 +45,14 @@ void Camera::updateView(vec3 _viewVector)
 
 void Camera::GoFoward(bool fly = false)
 {
-	if(fly)
+
+	if (fly)
 		positionVector += normalize(viewVector) * movementSpeed * 10.0f;
 	else
-		positionVector += normalize(vec3(viewVector.x, 0.0f, viewVector.z)) * movementSpeed;
+	{
+		//if (game.canGoFoward == true)
+			positionVector += normalize(vec3(viewVector.x, 0.0f, viewVector.z)) * movementSpeed;
+	}
 
 	positionMatrix = lookAt(
 		positionVector,

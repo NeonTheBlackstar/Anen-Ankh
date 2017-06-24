@@ -4,7 +4,6 @@
 #include "Texture.h"
 #include "glew/include/GL/glew.h"
 #include "glfw/include/GLFW/glfw3.h"
-#include "glut.h"
 #include "Programmed models/Cube.h"
 #include "Programmed models/Stairs.h"
 

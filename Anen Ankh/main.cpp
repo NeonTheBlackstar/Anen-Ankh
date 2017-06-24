@@ -1,5 +1,7 @@
 #include "OpenGLInitExit.h"
 #include "Game.h"
+#include "glew/include/GL/glew.h"
+#include "glfw/include/GLFW/glfw3.h"
 
 using namespace glm;
 using namespace std;
@@ -16,20 +18,19 @@ void initOpenGLProgram(GLFWwindow* window) {
 
 	glClearColor(0, 0, 0, 1);
 
-	//glEnable(GL_LIGHTING);
-	//glEnable(GL_LIGHT2);
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_TEXTURE_2D);
-	glEnable(GL_NORMALIZE);
+	//glEnable(GL_LIGHTING); //W³¹cz tryb cieniowania
+	glEnable(GL_LIGHT0); //W³¹cz zerowe Ÿród³o œwiat³a
+	glEnable(GL_DEPTH_TEST); //W³¹cz u¿ywanie budora g³êbokoœci
+	glEnable(GL_TEXTURE_2D); //W³¹cz teksturowanie
+	glEnable(GL_NORMALIZE); //W³¹cz automatyczn¹ normalizacjê wektorów normalnych
 
 	std::vector<unsigned char> image;
 	unsigned width, height;
-	unsigned error = lodepng::decode(image, width, height, "bricks.png");
+	unsigned error = lodepng::decode(image, width, height, "Textures/floor.png");
 
 	glGenTextures(1, &tex);
 	glBindTexture(GL_TEXTURE_2D, tex);
 	glTexImage2D(GL_TEXTURE_2D, 0, 4, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char*)image.data());
-
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 }
 
@@ -60,10 +61,10 @@ void keyCallback(GLFWwindow*window, int key, int scancode, int action, int mods)
 			game.player.SetCollider();
 		}
 
-		if (key == GLFW_KEY_W && game.canGoFoward)
+		if (key == GLFW_KEY_W)
 		{
-			game.player.GoFoward();
-			game.player.SetCollider();
+				game.player.GoFoward();
+				game.player.SetCollider();
 		}
 
 		if (key == GLFW_KEY_S && game.canGoBack)
@@ -84,7 +85,7 @@ void keyCallback(GLFWwindow*window, int key, int scancode, int action, int mods)
 			game.player.GoLeft(true);
 		}
 
-		if (key == GLFW_KEY_W && game.canGoFoward)
+		if (key == GLFW_KEY_W && game.canGoFoward == true)
 		{
 			game.player.GoFoward(true);
 		}
