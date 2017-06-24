@@ -6,6 +6,126 @@
 #include "glfw/include/GLFW/glfw3.h"
 #include "Programmed models/Cube.h"
 #include "Programmed models/Stairs.h"
+#include <sstream>
+
+#pragma region PARSER
+//PARSER OBJ
+void split(string &in, vector<string> &out, char sep = ' ') {
+	out.clear();
+	std::istringstream iss(in);
+	std::string sub;
+
+	while (std::getline(iss, sub, sep)) {
+		out.push_back(sub);
+	}
+}
+
+void processVertex(vector<string> &in, vector<vec3> &out) {
+	out.push_back(vec3(atof(in[1].c_str()),
+		atof(in[2].c_str()),
+		atof(in[3].c_str())
+	));
+}
+
+void processNormal(vector<string> &in, vector<vec3> &out) {
+	processVertex(in, out);
+}
+
+void processTexCoord(vector<string> &in, vector<vec2> &out) {
+	out.push_back(vec2(atof(in[1].c_str()),
+		atof(in[2].c_str())
+	));
+}
+
+void decompressVertex(string vertexStr,
+	vector<vec3> &vertices, vector<vec3> &normals, vector<vec2> &texCoords,
+	vector<float> &outV, vector<float> &outN, vector<float> &outT) {
+
+	vector<string> tmp;
+	split(vertexStr, tmp, '/');
+
+	outV.push_back(vertices[atoi(tmp[0].c_str()) - 1].x);
+	outV.push_back(vertices[atoi(tmp[0].c_str()) - 1].y);
+	outV.push_back(vertices[atoi(tmp[0].c_str()) - 1].z);
+
+	outT.push_back(texCoords[atoi(tmp[1].c_str()) - 1].x);
+	outT.push_back(texCoords[atoi(tmp[1].c_str()) - 1].y);
+
+	outN.push_back(normals[atoi(tmp[2].c_str()) - 1].x);
+	outN.push_back(normals[atoi(tmp[2].c_str()) - 1].y);
+	outN.push_back(normals[atoi(tmp[2].c_str()) - 1].z);
+
+}
+
+vec3 getPos(string vertexStr, vector<vec3> &vertices) {
+
+	vector<string> tmp;
+	split(vertexStr, tmp, '/');
+	return vertices[atoi(tmp[0].c_str()) - 1];
+
+}
+
+void processFace(vector<string> &in,
+	vector<vec3> &vertices, vector<vec3> &normals, vector<vec2> &texCoords,
+	vector<float> &outV, vector<float> &outN, vector<float> &outT) {
+
+	decompressVertex(in[1], vertices, normals, texCoords, outV, outN, outT);
+	decompressVertex(in[2], vertices, normals, texCoords, outV, outN, outT);
+	decompressVertex(in[3], vertices, normals, texCoords, outV, outN, outT);
+}
+
+void processObj(string filename, vector<float> &outV, vector<float> &outN, vector<float> &outT) {
+	vector<vec3> vertices;
+	vector<vec3> normals;
+	vector<vec2> texCoords;
+
+
+
+	ifstream inFile;
+	inFile.open(filename.c_str());
+
+	string line;
+	vector<string> tmp;
+
+	while (getline(inFile, line)) {
+		split(line, tmp);
+		if (tmp.size()>0) {
+			if (tmp[0] == "v") {
+				processVertex(tmp, vertices);
+				//printf("wierzcholek %f,%f,%f\n",vertices.back().x,vertices.back().y,vertices.back().z);
+			}
+			else if (tmp[0] == "vn") {
+				processNormal(tmp, normals);
+				//printf("normalna %f,%f,%f\n",normals.back().x,normals.back().y,normals.back().z);
+			}
+			else if (tmp[0] == "vt") {
+				processTexCoord(tmp, texCoords);
+				//printf("wsp. tex. %f,%f\n",texCoords.back().x,texCoords.back().y);
+			}
+		}
+	}
+
+	inFile.close();
+
+	inFile.open(filename.c_str());
+
+	while (getline(inFile, line)) {
+		split(line, tmp);
+		if (tmp.size()>0) {
+			if (tmp[0] == "f") {
+				processFace(tmp, vertices, normals, texCoords, outV, outN, outT);
+			}
+		}
+	}
+
+	inFile.close();
+
+
+	//printf("%d %d %d\n",vertices.size(),normals.size(),texCoords.size());
+
+}
+#pragma endregion
+
 
 class Construct
 {
@@ -61,6 +181,8 @@ void Construct::SetLineCollider(float firstPositionX, float secondPositionX, flo
 void Construct::DrawSolid(mat4 playerPosition)
 {
 	mat4 M = mat4(1);
+
+	texture.ShowTexture();
 
 	switch (selectedFigureType)
 	{

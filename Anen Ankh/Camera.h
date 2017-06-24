@@ -30,8 +30,6 @@ void Camera::updateView(vec3 _viewVector)
 {
 	double radians = atan2(length(cross(_viewVector, UP_vector)), dot(_viewVector, UP_vector)); // Zakres wartosci od 0 do PI
 
-	printf("!!!!!!!!!ANGLE: %f\n\n", radians);
-
 	if (radians <= 3.0f && radians >= 0.1f)
 	{
 		viewVector = _viewVector;
