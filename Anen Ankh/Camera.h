@@ -12,6 +12,10 @@ public:
 	vec3 viewVector;
 	vec3 UP_vector;
 	float movementSpeed = 0.1f;
+	bool canGoLeft = true;
+	bool canGoRight = true;
+	bool canGoFoward = true;
+	bool canGoBack = true;
 public:
 	Camera() {};
 	~Camera() {};
@@ -48,8 +52,28 @@ void Camera::GoFoward(bool fly = false)
 		positionVector += normalize(viewVector) * movementSpeed * 10.0f;
 	else
 	{
-		//if (game.canGoFoward == true)
-			positionVector += normalize(vec3(viewVector.x, 0.0f, viewVector.z)) * movementSpeed;
+		vec3 lastPlayerPosition = positionVector;
+		positionVector += normalize(vec3(viewVector.x, 0.0f, viewVector.z)) * movementSpeed;
+		if (canGoFoward == false)
+		{
+			if (positionVector.z < lastPlayerPosition.z)
+				positionVector = vec3(positionVector.x, positionVector.y, lastPlayerPosition.z);
+		}
+		if (canGoBack == false)
+		{
+			if (positionVector.z > lastPlayerPosition.z)
+				positionVector = vec3(positionVector.x, positionVector.y, lastPlayerPosition.z);
+		}
+		if (canGoLeft == false)
+		{
+			if (positionVector.x < lastPlayerPosition.x)
+				positionVector = vec3(lastPlayerPosition.x, positionVector.y, positionVector.z);
+		}
+		if (canGoRight == false)
+		{
+			if (positionVector.x > lastPlayerPosition.x)
+				positionVector = vec3(lastPlayerPosition.x, positionVector.y, positionVector.z);
+		}
 	}
 
 	positionMatrix = lookAt(
@@ -63,7 +87,30 @@ void Camera::GoBack(bool fly = false)
 	if (fly)
 		positionVector -= normalize(viewVector) * movementSpeed * 10.0f;
 	else
+	{
+		vec3 lastPlayerPosition = positionVector;
 		positionVector -= normalize(vec3(viewVector.x, 0.0f, viewVector.z)) * movementSpeed;
+		if (canGoFoward == false)
+		{
+			if (positionVector.z < lastPlayerPosition.z)
+				positionVector = vec3(positionVector.x, positionVector.y, lastPlayerPosition.z);
+		}
+		if (canGoBack == false)
+		{
+			if (positionVector.z > lastPlayerPosition.z)
+				positionVector = vec3(positionVector.x, positionVector.y, lastPlayerPosition.z);
+		}
+		if (canGoLeft == false)
+		{
+			if (positionVector.x < lastPlayerPosition.x)
+				positionVector = vec3(lastPlayerPosition.x, positionVector.y, positionVector.z);
+		}
+		if (canGoRight == false)
+		{
+			if (positionVector.x > lastPlayerPosition.x)
+				positionVector = vec3(lastPlayerPosition.x, positionVector.y, positionVector.z);
+		}
+	}
 
 	positionMatrix = lookAt(
 		positionVector,
@@ -78,7 +125,30 @@ void Camera::GoLeft(bool fly = false)
 	if (fly)
 		positionVector -= crossVector * movementSpeed * 10.0f;
 	else
+	{
+		vec3 lastPlayerPosition = positionVector;
 		positionVector -= crossVector * movementSpeed;
+		if (canGoFoward == false)
+		{
+			if (positionVector.z < lastPlayerPosition.z)
+				positionVector = vec3(positionVector.x, positionVector.y, lastPlayerPosition.z);
+		}
+		if (canGoBack == false)
+		{
+			if (positionVector.z > lastPlayerPosition.z)
+				positionVector = vec3(positionVector.x, positionVector.y, lastPlayerPosition.z);
+		}
+		if (canGoLeft == false)
+		{
+			if (positionVector.x < lastPlayerPosition.x)
+				positionVector = vec3(lastPlayerPosition.x, positionVector.y, positionVector.z);
+		}
+		if (canGoRight == false)
+		{
+			if (positionVector.x > lastPlayerPosition.x)
+				positionVector = vec3(lastPlayerPosition.x, positionVector.y, positionVector.z);
+		}
+	}
 
 	positionMatrix = lookAt(
 		positionVector,
@@ -93,7 +163,30 @@ void Camera::GoRight(bool fly = false)
 	if (fly)
 		positionVector += crossVector * movementSpeed * 10.0f;
 	else
+	{
+		vec3 lastPlayerPosition = positionVector;
 		positionVector += crossVector * movementSpeed;
+		if (canGoFoward == false)
+		{
+			if (positionVector.z < lastPlayerPosition.z)
+				positionVector = vec3(positionVector.x, positionVector.y, lastPlayerPosition.z);
+		}
+		if (canGoBack == false)
+		{
+			if (positionVector.z > lastPlayerPosition.z)
+				positionVector = vec3(positionVector.x, positionVector.y, lastPlayerPosition.z);
+		}
+		if (canGoLeft == false)
+		{
+			if (positionVector.x < lastPlayerPosition.x)
+				positionVector = vec3(lastPlayerPosition.x, positionVector.y, positionVector.z);
+		}
+		if (canGoRight == false)
+		{
+			if (positionVector.x > lastPlayerPosition.x)
+				positionVector = vec3(lastPlayerPosition.x, positionVector.y, positionVector.z);
+		}
+	}
 
 	positionMatrix = lookAt(
 		positionVector,
