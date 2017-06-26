@@ -40,6 +40,7 @@ void initOpenGLProgram(GLFWwindow* window) {
 }
 
 void drawScene(GLFWwindow* window) {
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Wyczyœæ bufor kolorów (czyli przygotuj "p³ótno" do rysowania)
 	glMatrixMode(GL_PROJECTION); //W³¹cz tryb modyfikacji macierzy rzutowania
 	glLoadMatrixf(value_ptr(game.SetPerspective())); //Za³aduj macierz rzutowania
@@ -90,13 +91,13 @@ void keyCallback(GLFWwindow*window, int key, int scancode, int action, int mods)
 
 	if (game.player.noClip == false)
 	{
-		if (key == GLFW_KEY_D && game.canGoLeft)
+		if (key == GLFW_KEY_D)
 		{
 			game.player.GoRight();
 			game.player.SetCollider();
 		}
 
-		if (key == GLFW_KEY_A && game.canGoRight)
+		if (key == GLFW_KEY_A)
 		{
 			game.player.GoLeft();
 			game.player.SetCollider();
@@ -108,7 +109,7 @@ void keyCallback(GLFWwindow*window, int key, int scancode, int action, int mods)
 				game.player.SetCollider();
 		}
 
-		if (key == GLFW_KEY_S && game.canGoBack)
+		if (key == GLFW_KEY_S)
 		{
 			game.player.GoBack();
 			game.player.SetCollider();
@@ -116,22 +117,22 @@ void keyCallback(GLFWwindow*window, int key, int scancode, int action, int mods)
 	}
 	else if (game.player.noClip == true)
 	{
-		if (key == GLFW_KEY_D && game.canGoLeft)
+		if (key == GLFW_KEY_D)
 		{
 			game.player.GoRight(true);
 		}
 
-		if (key == GLFW_KEY_A && game.canGoRight)
+		if (key == GLFW_KEY_A)
 		{
 			game.player.GoLeft(true);
 		}
 
-		if (key == GLFW_KEY_W && game.canGoFoward == true)
+		if (key == GLFW_KEY_W)
 		{
 			game.player.GoFoward(true);
 		}
 
-		if (key == GLFW_KEY_S && game.canGoBack)
+		if (key == GLFW_KEY_S)
 		{
 			game.player.GoBack(true);
 		}
