@@ -16,15 +16,18 @@ std::vector<unsigned char> image1, image2;
 unsigned error, 
 	width1, height1, 
 	width2, height2;
+vector<float> objV, objN, objT;
 
 void initOpenGLProgram(GLFWwindow* window) {
 	//Je¿eli bêdziemy chcieli bawic siê perspektyw¹, to trza to prze³o¿yæ to draw Scene
 
 	glClearColor(0, 0, 0, 1);
+	glEnable(GL_DEPTH_TEST); //W³¹cz u¿ywanie budora g³êbokoœci
+
 
 	//glEnable(GL_LIGHTING); //W³¹cz tryb cieniowania
 	glEnable(GL_LIGHT0); //W³¹cz zerowe Ÿród³o œwiat³a
-	glEnable(GL_DEPTH_TEST); //W³¹cz u¿ywanie budora g³êbokoœci
+	
 	glEnable(GL_TEXTURE_2D); //W³¹cz teksturowanie
 	glEnable(GL_NORMALIZE); //W³¹cz automatyczn¹ normalizacjê wektorów normalnych
 	
@@ -33,6 +36,7 @@ void initOpenGLProgram(GLFWwindow* window) {
 	glGenTextures(1, &tex1);
 	error = lodepng::decode(image2, width2, height2, "Textures/bricks.png");
 	glGenTextures(1, &tex2);
+	processObj("models/sprocket.obj", objV, objN, objT);
 }
 
 void drawScene(GLFWwindow* window) {
@@ -40,29 +44,19 @@ void drawScene(GLFWwindow* window) {
 	glMatrixMode(GL_PROJECTION); //W³¹cz tryb modyfikacji macierzy rzutowania
 	glLoadMatrixf(value_ptr(game.SetPerspective())); //Za³aduj macierz rzutowania
 
-	/*glBindTexture(GL_TEXTURE_2D, tex1);
-	glTexImage2D(GL_TEXTURE_2D, 0, 4, width1, height1, 0, GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char*)image1.data());
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);*/
 
 	game.ShowLevelOne();
 
 	#pragma region showModel
-	vector<float> objV, objN, objT;
 
 	/////////////
 
-	glBindTexture(GL_TEXTURE_2D, tex2);
-	glTexImage2D(GL_TEXTURE_2D, 0, 4, width2, height2, 0, GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char*)image2.data());
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	mat4 Mo = mat4(1), M;
 
-	processObj("models/cube.obj", objV, objN, objT);
+	Mo = game.player.positionMatrix*M;
 
-	mat4 M = mat4(1);
-
-	M = game.player.positionMatrix*M;
-
-	M = translate(M, vec3(0, -50, 0));
-	M = scale(M, vec3(10, 10, 10));
+	M = translate(Mo, vec3(0, -50, 0));
+	M = scale(M, vec3(0.5, 005, 0.5));
 	glMatrixMode(GL_MODELVIEW);
 	glLoadMatrixf(value_ptr(M));
 
@@ -74,6 +68,10 @@ void drawScene(GLFWwindow* window) {
 	glTexCoordPointer(2, GL_FLOAT, 0, objT.data()); //Ustaw tablicê myCubeTexCoords jako tablicê wsp. teksturowania
 	glNormalPointer(GL_FLOAT, 0, objN.data()); //Ustaw tablicê myCubeVertices jako tablicê wektorów normalnych - tutaj akurat wsp. wierzcho³ka=suma wektorów normalnych œcian s¹siaduj¹cych
 	glDrawArrays(GL_TRIANGLES, 0, objV.size() / 3); //Rysuj model
+
+	/*mat4 Mz = Mo; // za³adowanie macierzy g³ównej
+	Mz = scale(Mo, vec3(0.025f, 0.05f, 0.025f)); // przeskaluj macierz modelu
+	glLoadMatrixf(value_ptr(Mz));*/
 
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -213,10 +211,6 @@ int main(void)
 			xCursorPos = new_xCursorPos;
 			yCursorPos = new_yCursorPos;
 
-			/*printf("|| (%f, %f, %f) | (%f, %f, %f) | (%f, %f, %f) ||\n",
-			game.player.positionVector.x, game.player.positionVector.y, game.player.positionVector.z,
-			game.player.viewVector.x, game.player.viewVector.y, game.player.viewVector.z,
-			game.player.UP_vector.x, game.player.UP_vector.y, game.player.UP_vector.z);*/
 		}
 #pragma endregion
 

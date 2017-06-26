@@ -7,6 +7,9 @@
 #include "Programmed models/Cube.h"
 #include "Programmed models/Stairs.h"
 #include <sstream>
+#include <list>
+
+using namespace std;
 
 #pragma region PARSER
 //PARSER OBJ
@@ -69,9 +72,9 @@ void processFace(vector<string> &in,
 	vector<vec3> &vertices, vector<vec3> &normals, vector<vec2> &texCoords,
 	vector<float> &outV, vector<float> &outN, vector<float> &outT) {
 
-	decompressVertex(in[1], vertices, normals, texCoords, outV, outN, outT);
-	decompressVertex(in[2], vertices, normals, texCoords, outV, outN, outT);
-	decompressVertex(in[3], vertices, normals, texCoords, outV, outN, outT);
+	//decompressVertex(in[1], vertices, normals, texCoords, outV, outN, outT);
+	//decompressVertex(in[2], vertices, normals, texCoords, outV, outN, outT);
+	//decompressVertex(in[3], vertices, normals, texCoords, outV, outN, outT);
 }
 
 void processObj(string filename, vector<float> &outV, vector<float> &outN, vector<float> &outT) {
@@ -120,9 +123,6 @@ void processObj(string filename, vector<float> &outV, vector<float> &outN, vecto
 
 	inFile.close();
 
-
-	//printf("%d %d %d\n",vertices.size(),normals.size(),texCoords.size());
-
 }
 #pragma endregion
 
@@ -138,10 +138,10 @@ public:
 	LineCollider2D lineCollider;
 
 private:
-	Texture texture = *(new Texture(""));
 	mat4 modelMatrix;
 	mat4 parentMatrix;
 	string name;
+	Texture * p_texture;
 	int selectedFigureType;
 	vec3 position;
 	vec3 size;
@@ -149,18 +149,18 @@ private:
 	vec3 rotationAxis;
 
 public:
-	Construct(string name, int selectedFigureType, mat4 parentMatrix, Texture texture, vec3 position, vec3 size, vec3 rotationAxis, float rotationAngle);
+	Construct(string name, int selectedFigureType, mat4 parentMatrix, Texture * texture, vec3 position, vec3 size, vec3 rotationAxis, float rotationAngle);
 	~Construct() {};
 	void SetCubeCollider(vec3 positionOfCenter, vec3 difference, vec3 size);
 	void SetLineCollider(float firstPositionX, float secondPositionX, float firstPositionY, float secondPositionY);
-	void DrawSolid(mat4 playerPosition);
+	void DrawSolid(mat4 playerPosition, Texture * tex = NULL);
 };
 
-Construct::Construct(string name, int selectedFigureType, mat4 parentMatrix, Texture texture = *(new Texture("")), vec3 position = vec3(0, 0, 0), vec3 size = vec3(1, 1, 1), vec3 rotationAxis = vec3(1, 1, 1), float rotationAngle = 0)
+Construct::Construct(string name, int selectedFigureType, mat4 parentMatrix, Texture * texture, vec3 position = vec3(0, 0, 0), vec3 size = vec3(1, 1, 1), vec3 rotationAxis = vec3(1, 1, 1), float rotationAngle = 0)
 {
 	this->selectedFigureType = selectedFigureType;
 	this->parentMatrix = parentMatrix;
-	this->texture = texture;
+	this->p_texture = texture;
 	this->modelMatrix = parentMatrix;
 	this->position = position;//translate(modelMatrix, position);
 	this->size = size;//scale(modelMatrix, size);
@@ -178,11 +178,16 @@ void Construct::SetLineCollider(float firstPositionX, float secondPositionX, flo
 	lineCollider = *(new LineCollider2D(firstPositionX, secondPositionX, firstPositionY, secondPositionY));
 }
 
-void Construct::DrawSolid(mat4 playerPosition)
+void Construct::DrawSolid(mat4 playerPosition, Texture * tex)
 {
 	mat4 M = mat4(1);
-
-	texture.ShowTexture();
+	//printf("%s\n", p_texture->test);
+	//printf("%s | %s\n", p_texture->filepath, tex->filepath);
+	/*if (tex->filepath != p_texture->filepath) {
+		p_texture->ShowTexture();
+		tex = p_texture;
+	}*/
+	p_texture->ShowTexture();
 
 	switch (selectedFigureType)
 	{

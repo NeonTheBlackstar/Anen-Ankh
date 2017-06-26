@@ -18,6 +18,7 @@ public:
 	unsigned error;
 	string filepath;
 	int test = 1337;
+	static Texture * active;
 
 private:
 
