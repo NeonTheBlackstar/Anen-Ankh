@@ -18,7 +18,7 @@ public:
 	Room(vec3 position, vec3 size);
 	~Room() {};
 	void AddObject(Construct object);
-	void ShowRoom(mat4 playerPosition, Texture * tex = NULL);
+	void ShowRoom(mat4 playerPosition, vector<float> objV, vector<float> objN, vector<float> objT, Texture * tex = NULL);
 };
 
 Room::Room(vec3 position, vec3 size)
@@ -34,10 +34,10 @@ void Room::AddObject(Construct object)
 	objects.push_back(object);
 }
 
-void Room::ShowRoom(mat4 playerPosition, Texture * tex)
+void Room::ShowRoom(mat4 playerPosition, vector<float> objV, vector<float> objN, vector<float> objT, Texture * tex)
 {
 	for (int i = 0; i < objects.size(); i++)
 	{
-		objects[i].DrawSolid(playerPosition, tex);
+		objects[i].DrawSolid(playerPosition, objV, objN, objT, tex);
 	}
 }

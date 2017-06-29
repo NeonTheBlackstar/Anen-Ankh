@@ -11,12 +11,16 @@ using namespace std;
 //Np idŸ w przód to bêdzie od razu idŸ w przód i 
 //sprawdŸ czy nadal trzymasz siê kolizji czy spadasz.
 Game game = *(new Game());
-GLuint tex1, tex2;
-std::vector<unsigned char> image1, image2;
+GLuint tex1, tex2,tex3,tex4;
+std::vector<unsigned char> image1, image2,image3, image4;
 unsigned error, 
-	width1, height1, 
-	width2, height2;
-vector<float> objV, objN, objT;
+	width1, height1,
+	width2, height2,
+	width3, height3,
+	width4, height4;
+vector<float> objV1, objN1, objT1;
+vector<float> objV2, objN2, objT2;
+vector<float> objV3, objN3, objT3;
 
 void initOpenGLProgram(GLFWwindow* window) {
 	//Je¿eli bêdziemy chcieli bawic siê perspektyw¹, to trza to prze³o¿yæ to draw Scene
@@ -24,8 +28,7 @@ void initOpenGLProgram(GLFWwindow* window) {
 	glClearColor(0, 0, 0, 1);
 	glEnable(GL_DEPTH_TEST); //W³¹cz u¿ywanie budora g³êbokoœci
 
-
-	//glEnable(GL_LIGHTING); //W³¹cz tryb cieniowania
+	glEnable(GL_LIGHTING); //W³¹cz tryb cieniowania
 	glEnable(GL_LIGHT0); //W³¹cz zerowe Ÿród³o œwiat³a
 	
 	glEnable(GL_TEXTURE_2D); //W³¹cz teksturowanie
@@ -36,7 +39,14 @@ void initOpenGLProgram(GLFWwindow* window) {
 	glGenTextures(1, &tex1);
 	error = lodepng::decode(image2, width2, height2, "Textures/bricks.png");
 	glGenTextures(1, &tex2);
-	processObj("models/sprocket.obj", objV, objN, objT);
+	error = lodepng::decode(image3, width3, height3, "Textures/metal.png");
+	glGenTextures(1, &tex3);
+	error = lodepng::decode(image4, width4, height4, "Textures/bandage.png");
+	glGenTextures(1, &tex4);
+
+	processObj("models/cube.obj", objV1, objN1, objT1);
+	processObj("models/schody_tr.obj", objV2, objN2, objT2);
+	processObj("models/batman_tr.obj", objV3, objN3, objT3);
 }
 
 void drawScene(GLFWwindow* window) {
@@ -44,43 +54,73 @@ void drawScene(GLFWwindow* window) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Wyczyœæ bufor kolorów (czyli przygotuj "p³ótno" do rysowania)
 	glMatrixMode(GL_PROJECTION); //W³¹cz tryb modyfikacji macierzy rzutowania
 	glLoadMatrixf(value_ptr(game.SetPerspective())); //Za³aduj macierz rzutowania
+	mat4 Mo = mat4(1), Mbat, M; //Mo - origin matrix
+	
+#pragma region schody
 
+	glBindTexture(GL_TEXTURE_2D, tex3);
+	glTexImage2D(GL_TEXTURE_2D, 0, 4, width3, height3, 0, GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char*)image3.data());
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-	game.ShowLevelOne();
+	M = mat4(1);
+	M = translate(Mo, vec3(10, 48, -5));
+	M = scale(M, vec3(11, 8, 5.5));
+	M = rotate(M, 3.14f, vec3(1, 0, 0));
+	M = rotate(M, 3.14f, vec3(0, 1, 0));
+	//texStairs->ShowTexture(game.GetPlayerPositionMatrix(), M, vec3(1,1,1));
+	M = game.player.positionMatrix*M;
 
-	#pragma region showModel
-
-	/////////////
-
-	mat4 Mo = mat4(1), M;
-
-	Mo = game.player.positionMatrix*M;
-
-	M = translate(Mo, vec3(0, -50, 0));
-	M = scale(M, vec3(0.5, 005, 0.5));
 	glMatrixMode(GL_MODELVIEW);
 	glLoadMatrixf(value_ptr(M));
 
 	glEnableClientState(GL_VERTEX_ARRAY); //Podczas rysowania u¿ywaj tablicy wierzcho³ków
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY); //Podczas rysowania u¿ywaj tablicy wsp. teksturowania
 	glEnableClientState(GL_NORMAL_ARRAY); //Podczas rysowania u¿ywaj tablicy wektorów normalnych
-
-	glVertexPointer(3, GL_FLOAT, 0, objV.data()); //Ustaw tablicê myCubeVertices jako tablicê wierzcho³ków
-	glTexCoordPointer(2, GL_FLOAT, 0, objT.data()); //Ustaw tablicê myCubeTexCoords jako tablicê wsp. teksturowania
-	glNormalPointer(GL_FLOAT, 0, objN.data()); //Ustaw tablicê myCubeVertices jako tablicê wektorów normalnych - tutaj akurat wsp. wierzcho³ka=suma wektorów normalnych œcian s¹siaduj¹cych
-	glDrawArrays(GL_TRIANGLES, 0, objV.size() / 3); //Rysuj model
-
-	/*mat4 Mz = Mo; // za³adowanie macierzy g³ównej
-	Mz = scale(Mo, vec3(0.025f, 0.05f, 0.025f)); // przeskaluj macierz modelu
-	glLoadMatrixf(value_ptr(Mz));*/
+	glVertexPointer(3, GL_FLOAT, 0, objV2.data()); //Ustaw tablicê myCubeVertices jako tablicê wierzcho³ków
+	glTexCoordPointer(2, GL_FLOAT, 0, objT2.data()); //Ustaw tablicê myCubeTexCoords jako tablicê wsp. teksturowania
+	glNormalPointer(GL_FLOAT, 0, objN2.data()); //Ustaw tablicê myCubeVertices jako tablicê wektorów normalnych - tutaj akurat wsp. wierzcho³ka=suma wektorów normalnych œcian s¹siaduj¹cych
+	glDrawArrays(GL_TRIANGLES, 0, objV2.size() / 3); //Rysuj model
 
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);
 
-	#pragma endregion
+#pragma endregion
 
+#pragma region batman
 
+	glBindTexture(GL_TEXTURE_2D, tex4);
+	glTexImage2D(GL_TEXTURE_2D, 0, 4, width4, height4, 0, GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char*)image4.data());
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	Mo = game.player.positionMatrix*Mbat;
+
+	Mbat = translate(Mo, vec3(-85, 16, 0));
+	Mbat = scale(Mbat, vec3(6, 6, 6));
+	Mbat = rotate(Mbat, 3.14f, vec3(1, 0, 0));
+	Mbat = rotate(Mbat, 3.14f / 2, vec3(0, 1, 0));
+	glMatrixMode(GL_MODELVIEW);
+	glLoadMatrixf(value_ptr(Mbat));
+
+	glEnableClientState(GL_VERTEX_ARRAY); //Podczas rysowania u¿ywaj tablicy wierzcho³ków
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY); //Podczas rysowania u¿ywaj tablicy wsp. teksturowania
+	glEnableClientState(GL_NORMAL_ARRAY); //Podczas rysowania u¿ywaj tablicy wektorów normalnych
+
+	glVertexPointer(3, GL_FLOAT, 0, objV3.data()); //Ustaw tablicê myCubeVertices jako tablicê wierzcho³ków
+	glTexCoordPointer(2, GL_FLOAT, 0, objT3.data()); //Ustaw tablicê myCubeTexCoords jako tablicê wsp. teksturowania
+	glNormalPointer(GL_FLOAT, 0, objN3.data()); //Ustaw tablicê myCubeVertices jako tablicê wektorów normalnych - tutaj akurat wsp. wierzcho³ka=suma wektorów normalnych œcian s¹siaduj¹cych
+	glDrawArrays(GL_TRIANGLES, 0, objV3.size() / 3); //Rysuj model
+
+													 /*mat4 Mz = Mo; // za³adowanie macierzy g³ównej
+													 Mz = scale(Mo, vec3(0.025f, 0.05f, 0.025f)); // przeskaluj macierz modelu
+													 glLoadMatrixf(value_ptr(Mz));*/
+
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	glEnableClientState(GL_NORMAL_ARRAY);
+
+#pragma endregion
+	game.ShowLevelOne(objV1, objN1, objT1);
 	glfwSwapBuffers(window); //Przerzuæ tylny bufor na przedni
 }
 
@@ -186,7 +226,10 @@ int main(void)
 	float xMotionDelta, yMotionDelta;
 #pragma endregion
 
-	game.SetLevelOne();
+	game.SetLevelOne(objV1, objN1, objT1);
+
+	//Texture * texStairs = (new Texture("Textures\\metal.png", "Textures\\metal_spec.png", objV2.size(), objV2.data(), objN2.data(), objT2.data(), objT2.data(), game.SetPerspective()));
+	//Texture * texBat = (new Texture("Textures\\metal.png", "Textures\\metal_spec.png", objV3.size(), objV3.data(), objN3.data(), objT3.data(), objT3.data(), game.SetPerspective()));
 
 	while (!glfwWindowShouldClose(window)) //Tak d³ugo jak okno nie powinno zostaæ zamkniête
 	{

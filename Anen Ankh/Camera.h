@@ -11,7 +11,7 @@ public:
 	//Dodane
 	vec3 viewVector;
 	vec3 UP_vector;
-	float movementSpeed = 0.1f;
+	float movementSpeed = 0.4f;
 	bool canGoLeft = true;
 	bool canGoRight = true;
 	bool canGoFoward = true;
@@ -49,7 +49,7 @@ void Camera::GoFoward(bool fly = false)
 {
 
 	if (fly)
-		positionVector += normalize(viewVector) * movementSpeed * 10.0f;
+		positionVector += normalize(viewVector) * movementSpeed * 5.0f;
 	else
 	{
 		vec3 lastPlayerPosition = positionVector;
@@ -85,7 +85,7 @@ void Camera::GoFoward(bool fly = false)
 void Camera::GoBack(bool fly = false)
 {
 	if (fly)
-		positionVector -= normalize(viewVector) * movementSpeed * 10.0f;
+		positionVector -= normalize(viewVector) * movementSpeed * 5.0f;
 	else
 	{
 		vec3 lastPlayerPosition = positionVector;
@@ -123,7 +123,7 @@ void Camera::GoLeft(bool fly = false)
 	vec3 crossVector = normalize(cross(viewVector, UP_vector));
 
 	if (fly)
-		positionVector -= crossVector * movementSpeed * 10.0f;
+		positionVector -= crossVector * movementSpeed * 5.0f;
 	else
 	{
 		vec3 lastPlayerPosition = positionVector;
@@ -161,7 +161,7 @@ void Camera::GoRight(bool fly = false)
 	vec3 crossVector = normalize(cross(viewVector, UP_vector));
 
 	if (fly)
-		positionVector += crossVector * movementSpeed * 10.0f;
+		positionVector += crossVector * movementSpeed * 5.0f;
 	else
 	{
 		vec3 lastPlayerPosition = positionVector;

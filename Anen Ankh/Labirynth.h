@@ -14,7 +14,7 @@ public:
 	Labirynth() {};
 	~Labirynth() {};
 	void AddRoom(Room room);
-	void ShowLabirynth(mat4 playerPosition, Texture * tex = NULL);
+	void ShowLabirynth(mat4 playerPosition, vector<float> objV, vector<float> objN, vector<float> objT, Texture * tex );
 };
 
 void Labirynth::AddRoom(Room room)
@@ -22,10 +22,10 @@ void Labirynth::AddRoom(Room room)
 	rooms.push_back(room);
 }
 
-void Labirynth::ShowLabirynth(mat4 playerPosition, Texture * tex)
+void Labirynth::ShowLabirynth(mat4 playerPosition, vector<float> objV, vector<float> objN, vector<float> objT, Texture * tex )
 {
 	for (int i = 0; i < rooms.size(); i++)
 	{
-		rooms[i].ShowRoom(playerPosition, tex);
+		rooms[i].ShowRoom(playerPosition, objV, objN, objT,tex);
 	}
 }

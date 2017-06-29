@@ -1,0 +1,45 @@
+#version 330
+
+//Zmienne jednorodne
+uniform mat4 P; //Macierz rzutowania
+uniform mat4 V; //Macierz widoku
+uniform mat4 M; //Macierz modelu
+uniform vec4 lp; //polozenie zrodla swiatla, wyrazone w przestrzeni swiata
+
+//Atrybuty
+in vec4 vertex; //wspolrzedne wierzcholka, wyrazone w przestrzeni modelu
+in vec4 color;  //kolor wierzcholka
+in vec4 normal; //wektor normalny w wierzcholku, wyrazone w przestrzeni modelu
+in vec2 texCoords; //wspolrzednie teksturowania
+in vec4 c1;
+in vec4 c2;
+in vec4 c3;
+
+//Zmienne interpolowane
+out vec4 iC; //Kolor przekazywany do fragment shadera. Obecnie ignorowany.
+out vec4 n; //Wektor normalny w przestrzeni oka
+out vec4 l; //Wektor do swiatla w przestrzeni oka
+out vec4 v; //Wektor do obserwatora w przestrzeni oka
+out vec2 iTexCoords; //Interpolowane wspolrzedne teksturowania
+
+
+void main(void) {
+//mat4 invTBN = mat4(c1,c2,c3,vec4(0,0,0,1));
+
+	//Obliczenie wektora do swiatla w przestrzeni oka
+	l= normalize(V*(lp-M*vertex));//normalize(invTBN*(inverse(M)*lp-vertex)); //
+	//Obliczenie wektora normalnego w przestrzeni oka
+	n=normalize(V*M*normal);
+	//Obliczenie wektora do obserwatora w przestrzeni oka
+	v= normalize(vec4(0,0,0,1)-V*M*vertex); //normalize(invTBN*(inverse(V*M)*vec4(0,0,0,1)-vertex)); //
+
+	//Przekazanie koloru do fragment shadera
+	iC=color;
+	//Interpolowanie współrzędnych teksturowania
+	iTexCoords=texCoords;
+
+	//Obliczenie wspolrzednej wierzcholka w przestrzeni przyciecia
+	gl_Position=P*V*M*vertex;
+}
+
+
