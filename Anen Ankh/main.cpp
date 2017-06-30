@@ -21,6 +21,8 @@ unsigned error,
 vector<float> objV1, objN1, objT1;
 vector<float> objV2, objN2, objT2;
 vector<float> objV3, objN3, objT3;
+Texture *texstairs = new Texture();
+Texture *texbat = new Texture();
 
 void initOpenGLProgram(GLFWwindow* window) {
 	//Je¿eli bêdziemy chcieli bawic siê perspektyw¹, to trza to prze³o¿yæ to draw Scene
@@ -47,6 +49,9 @@ void initOpenGLProgram(GLFWwindow* window) {
 	processObj("models/cube.obj", objV1, objN1, objT1);
 	processObj("models/schody_tr.obj", objV2, objN2, objT2);
 	processObj("models/batman_tr.obj", objV3, objN3, objT3);
+
+	texstairs = new Texture("Textures\\metal.png", "Textures\\metal_spec.png", objV2.size(), objV2.data(), objN2.data(), objT2.data(), objT2.data(), game.SetPerspective());
+	//texbat = new Texture("Textures\\metal.png", "Textures\\metal_spec.png", objV3.size(), objV3.data(), objN3.data(), objT3.data(), objT3.data(), game.SetPerspective());
 }
 
 void drawScene(GLFWwindow* window) {
@@ -54,24 +59,20 @@ void drawScene(GLFWwindow* window) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Wyczyœæ bufor kolorów (czyli przygotuj "p³ótno" do rysowania)
 	glMatrixMode(GL_PROJECTION); //W³¹cz tryb modyfikacji macierzy rzutowania
 	glLoadMatrixf(value_ptr(game.SetPerspective())); //Za³aduj macierz rzutowania
-	mat4 Mo = mat4(1), Mbat, M; //Mo - origin matrix
+	mat4 Mo = mat4(1), Mbat, Msch; //Mo - origin matrix
 	
 #pragma region schody
 
-	glBindTexture(GL_TEXTURE_2D, tex3);
-	glTexImage2D(GL_TEXTURE_2D, 0, 4, width3, height3, 0, GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char*)image3.data());
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-	M = mat4(1);
-	M = translate(Mo, vec3(10, 48, -5));
-	M = scale(M, vec3(11, 8, 5.5));
-	M = rotate(M, 3.14f, vec3(1, 0, 0));
-	M = rotate(M, 3.14f, vec3(0, 1, 0));
-	//texStairs->ShowTexture(game.GetPlayerPositionMatrix(), M, vec3(1,1,1));
-	M = game.player.positionMatrix*M;
+	Msch = mat4(1);
+	Msch = translate(Msch, vec3(10, 48, -5));
+	Msch = scale(Msch, vec3(11, 8, 5.5));
+	Msch = rotate(Msch, 3.14f, vec3(1, 0, 0));
+	Msch = rotate(Msch, 3.14f, vec3(0, 1, 0));
+	texstairs->ShowTexture(game.GetPlayerPositionMatrix(), Msch, vec3(1, 1, 1));
+	Msch = game.player.positionMatrix*Msch;
 
 	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(value_ptr(M));
+	glLoadMatrixf(value_ptr(Msch));
 
 	glEnableClientState(GL_VERTEX_ARRAY); //Podczas rysowania u¿ywaj tablicy wierzcho³ków
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY); //Podczas rysowania u¿ywaj tablicy wsp. teksturowania
@@ -85,6 +86,8 @@ void drawScene(GLFWwindow* window) {
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);
 
+	texstairs->EndTexture();
+
 #pragma endregion
 
 #pragma region batman
@@ -92,13 +95,15 @@ void drawScene(GLFWwindow* window) {
 	glBindTexture(GL_TEXTURE_2D, tex4);
 	glTexImage2D(GL_TEXTURE_2D, 0, 4, width4, height4, 0, GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char*)image4.data());
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-	Mo = game.player.positionMatrix*Mbat;
-
-	Mbat = translate(Mo, vec3(-85, 16, 0));
+	
+	Mbat = mat4(1);
+	Mbat = translate(Mbat, vec3(-85, 16, 0));
 	Mbat = scale(Mbat, vec3(6, 6, 6));
 	Mbat = rotate(Mbat, 3.14f, vec3(1, 0, 0));
-	Mbat = rotate(Mbat, 3.14f / 2, vec3(0, 1, 0));
+	Mbat = rotate(Mbat, 3.14f / 2, vec3(0, 1, 0));	
+	//texbat->ShowTexture(game.GetPlayerPositionMatrix(), Mbat, vec3(1, 1, 1));
+	Mbat = game.player.positionMatrix*Mbat;
+
 	glMatrixMode(GL_MODELVIEW);
 	glLoadMatrixf(value_ptr(Mbat));
 
@@ -109,7 +114,7 @@ void drawScene(GLFWwindow* window) {
 	glVertexPointer(3, GL_FLOAT, 0, objV3.data()); //Ustaw tablicê myCubeVertices jako tablicê wierzcho³ków
 	glTexCoordPointer(2, GL_FLOAT, 0, objT3.data()); //Ustaw tablicê myCubeTexCoords jako tablicê wsp. teksturowania
 	glNormalPointer(GL_FLOAT, 0, objN3.data()); //Ustaw tablicê myCubeVertices jako tablicê wektorów normalnych - tutaj akurat wsp. wierzcho³ka=suma wektorów normalnych œcian s¹siaduj¹cych
-	glDrawArrays(GL_TRIANGLES, 0, objV3.size() / 3); //Rysuj model
+	glDrawArrays(GL_TRIANGLES, 0, objV3.size()); //Rysuj model
 
 													 /*mat4 Mz = Mo; // za³adowanie macierzy g³ównej
 													 Mz = scale(Mo, vec3(0.025f, 0.05f, 0.025f)); // przeskaluj macierz modelu
@@ -119,7 +124,10 @@ void drawScene(GLFWwindow* window) {
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);
 
+	//texbat->EndTexture();
+
 #pragma endregion
+
 	game.ShowLevelOne(objV1, objN1, objT1);
 	glfwSwapBuffers(window); //Przerzuæ tylny bufor na przedni
 }

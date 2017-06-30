@@ -219,7 +219,7 @@ void Construct::DrawSolid(mat4 playerPosition, vector<float> objV, vector<float>
 		glDisableClientState(GL_VERTEX_ARRAY);
 		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 		glEnableClientState(GL_NORMAL_ARRAY);
-
+		p_texture->EndTexture();
 		break;
 
 	case stairs:
